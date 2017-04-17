@@ -1,14 +1,14 @@
-# lia-project
+# WIP lia-project
 A home intelligent assistant for raspberry PI with an optional module for mechanical robot (GoPiGo - Dexter Industries).
 Need Internet connexion for SpeechToText (Annyang js use native Chrome voice recognition) and TextToSpeech (Responsivevoice).
 
 # Technologies
 - Node 6.9.1 for raspberry pi
+- js ES5
 - SASS
 - Grunt
 - Bower
 - MongoDB
-- js ES5
 - Socket.IO (to communicate between client interface and server)
 - RSVP Promises
 - Cordova (optional for app mobile)
@@ -33,7 +33,7 @@ Need Internet connexion for SpeechToText (Annyang js use native Chrome voice rec
 - Chromium Browser for raspberry pi
 
 # build
-- grunt start
+- grunt build
 
 Client interface build in dist/ path. Server build in build/server.js
 
