@@ -1,0 +1,183 @@
+/* ==========================================================================
+droplistcheckbox
+========================================================================== */
+.droplistcheckbox, .dropbox {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  width: 100%;
+  height: 35px;
+  padding : 0;
+
+	.colorSquare{
+		display: inline-block;
+		width : 35px;
+		height: 35px;
+	}
+
+  .selector {
+    position: absolute;
+	cursor: pointer;
+    display: block;
+    overflow:hidden;
+    height: 35px;
+    width: 100%;
+    outline: 0px none;
+    border-color: $input-border-color;
+    border-style: solid;
+    border-width: 1px;
+    background-color: #FFF;
+    padding-left: 0px;
+    padding-right: 0px;
+    border-radius: 5px;
+    font-size: 14px;
+    z-index: 5;
+          &:hover{
+            background-color: #fbfbfb;
+	    a.arrowBtn {
+      			background-color: #ffffff;
+		}
+          }
+    a {
+      line-height: 35px;
+      height: 35px;
+      display: block;
+      text-decoration: none;
+      color: $text-color;
+      text-align: left;
+    }
+    .entry {
+      color: #aaaaaa;
+      &.hided {
+        display: none;
+      }
+    }
+    .multiSel {
+      color: $text-color;
+    }
+
+    .inputHided{
+      display: none;
+      position: absolute;
+      z-index: -1;
+      background-color: transparent;
+      border: none;
+      color: transparent;
+    }
+    a.arrowBtn {
+      position: absolute;
+      display: inline-block;
+      right: 0px;
+      top: 0px;
+      width: 35px;
+      height: 35px;
+
+      background-color: #ffffff;
+      z-index: 1;
+      span{
+        display: inline-block;
+        position: absolute;
+        font:10px "Consolas", monospace;
+        color: #000000;
+        left: 14px;
+        top: 10px;
+        @include vendor-prefix(transform, rotate(90deg));
+
+      }
+    }
+  }
+  .listSelect {
+    position: absolute;
+    width: 0px;
+    max-height: 250px;
+    overflow-y : scroll;
+    border: solid 1px $input-border-color;
+    background-color: #ffffff;
+    z-index: 4;
+    top: 35px;
+    opacity: 0;
+    //border-radius: 6px;
+    padding: 0px 0px 0px 0px;
+    box-shadow: -1px 3px 6px 1px rgba(0, 0, 0, 0.1); 
+    @include vendor-prefix(transform, scaleY(0));
+    @include vendor-prefix(transform-origin, 50% 0%);
+    @include vendor-prefix(transition, opacity 0.2s ease-out);
+    @include vendor-prefix(transition, transform 0.2s ease-out);
+    .checkHided{
+      position: absolute;
+      width: 0;
+      opacity: 0;
+    }
+    &.display {
+      @include vendor-prefix(transform, scaleY(1));
+      width: 100%;
+      opacity: 1;
+    }
+    .mutliSelect {
+      display: block;
+	width: 100%;
+	height: 100%;
+      ul {
+	width: 100%;
+	height: 100%;
+        padding: 0;
+        margin: 0;
+        li:nth-of-type(2n+1){
+
+        }
+        li {
+          height: 35px;
+          padding: 0;
+          list-style: none;
+	      cursor: pointer;
+          &:hover, &.over{
+            background-color: #ebebeb;
+            border: solid 1px #ebebeb;
+            label{
+
+            }
+          }
+          &.selected{
+            background-color: $btn-form-bg-color;
+            border: solid 1px $btn-form-bg-color;
+            span{
+              color: #ffffff;
+            }
+          }
+          a{
+            height: 35px;
+            margin: 0;
+            text-align: left;
+            width: 100%;
+            padding-left: 0px;
+            padding-right: 20px;
+            display: inline-block;
+	        color : $text-color;
+          }
+          span {
+            margin-top: 0px;
+            display: inline-block;
+		    vertical-align : top;
+          }
+
+          input {
+            display: inline-block;
+		    padding : 0;
+            margin-bottom: 0px;
+            margin-top: 0px;
+            width: auto;
+	        height: auto;
+            margin-right: 10px;
+          }
+
+          &.disabled {
+            opacity: 0.5;
+          }
+          &.all {
+            padding-left: 0;
+          }
+        }
+      }
+    }
+  }
+}

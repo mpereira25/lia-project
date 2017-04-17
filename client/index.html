@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Liya</title>
+        <meta property="description" name="description" content="Liya">
+        <meta property="og:description" name="og:description" content="Liya">
+        <meta name="theme-color" content="#000000">
+        <!-- build:css(.) css/vendor.css -->
+        <!-- bower:css -->
+        <!-- endbower -->
+        <!-- endbuild -->
+        <link rel="stylesheet" href="css/main.css">
+    </head>
+    <body>
+
+        <div class="nav">
+            <button class="btn btn-primary talkButton">Talk</button>
+            <button class="btn btn-primary listenButton">Listen</button>
+            <button class="btn btn-primary writeButton">Write</button>
+            <button class="btn btn-primary headButton">Head</button>
+            <button class="btn btn-primary haltButton">OFF</button>
+        </div>
+        <div class="headDiv">
+            <img src="assets/eye.png" class="imageEye" />
+            <div class="overlayBlack"></div>
+        </div>
+        <div class="dialogDiv">
+            <div class="dialogText">
+
+            </div>
+            <div class="dialogBottom">
+                <textarea class="dialogTextArea"></textarea>
+                <button class="dialogSubmit"></button>
+            </div>
+        </div>
+        <div class="controlDiv">
+            <!--<div class="analog">
+                <div class="bg"></div>
+                <div class="buttonAnalog resetPosition"></div>
+            </div>-->
+
+            <div class="ctBoard">
+                <div class="board">
+                    <div class="ctItem">
+                        <label class="labelBoard" for="Batery">Batery : <span class="voltText">12 V</span></label>
+                        <div class="jaugeBoard jaugeBatery" id="Batery"><div></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="ctPad">
+                <div class="pad">
+                    <div class="bg"></div>
+                    <div class="padButton up"><div></div></div>
+                    <div class="padButton down"><div></div></div>
+                    <div class="padButton right"><div></div></div>
+                    <div class="padButton left"><div></div></div>
+                    <div class="padButton leftDown"><div></div></div>
+                    <div class="padButton leftUp"><div></div></div>
+                    <div class="padButton rightDown"><div></div></div>
+                    <div class="padButton rightUp"><div></div></div>
+                </div>
+            </div>
+        </div>
+
+
+        <script>
+            var CONFIG_LIA = {
+                SERVER: {
+                    IP: '192.168.0.18',
+                    PORT: 9000
+                },
+                SOUNDCLOUD_KEY: ''
+            };
+        </script>
+        <script src="cordova.js"></script>
+        <script src="//cdn.jsdelivr.net/rsvp/3.0.6/rsvp.js"></script>
+        <script src="https://connect.soundcloud.com/sdk/sdk-3.1.2.js"></script>
+        <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
+
+        <!-- build:js(.) js/vendor.js -->
+        <!-- bower:js -->
+        <script src="bower_components/jquery/dist/jquery.js"></script>
+        <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+        <script src="bower_components/annyang/dist/annyang.min.js"></script>
+        <script src="bower_components/rsvp.js/dist/rsvp.js"></script>
+        <!-- endbower -->
+        <!-- endbuild -->
+
+        <!-- build:js({.,client}) js/main.js -->
+        <!-- injector:js -->
+        <script src="js/app.js"></script>
+        <script src="../common/constants/EVENT.js"></script>
+        <script src="../common/constants/SOCKET_MESSAGE.js"></script>
+        <script src="js/vendor/eventbusjs.js"></script>
+        <script src="js/vendor/jquery.uitouch.js"></script>
+        <script src="js/vendor/socket.io.js"></script>
+        <script src="js/controller/TalkController.js"></script>
+        <script src="js/controller/TouchController.js"></script>
+        <script src="js/dal/SocketController.js"></script>
+        <script src="js/dal/service/SoundcloudService.js"></script>
+        <script src="js/dal/service/YoutubeService.js"></script>
+        <script src="js/views/BoardViewController.js"></script>
+        <script src="js/views/HeadLedsView2Controller.js"></script>
+        <script src="js/views/HeadLedsViewController.js"></script>
+        <script src="js/views/NavViewController.js"></script>
+        <script src="js/views/PadAnalogViewController.js"></script>
+        <script src="js/views/PadViewController.js"></script>
+        <script src="js/views/ui/BoardView.js"></script>
+        <script src="js/views/ui/HeadLedsView.js"></script>
+        <script src="js/views/ui/HeadLedsView2.js"></script>
+        <script src="js/views/ui/NavView.js"></script>
+        <script src="js/views/ui/PadAnalogView.js"></script>
+        <script src="js/views/ui/PadView.js"></script>
+        <script src="js/main.js"></script>
+        <!-- endinjector -->
+        <!-- endbuild -->
+    </body>
+</html>

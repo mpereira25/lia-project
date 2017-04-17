@@ -1,0 +1,9 @@
+node_modules/
+bower_components/
+cordovaLiya/
+dist/
+build/
+.sass-cache
+.idea/
+.tmp/
+*.iml

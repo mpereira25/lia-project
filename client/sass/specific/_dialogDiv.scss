@@ -1,0 +1,28 @@
+.dialogDiv {
+
+  display: none;
+  position: absolute;
+  width: 95%;
+  height: 95%;
+  background-color: #ffffff;
+
+  &.display{
+    display: block;
+  }
+
+  .dialogText{
+    color: #000000;
+    width: 100%;
+    display: block;
+    height: 70%;
+    padding: 5px 5px;
+    overflow-y: scroll;
+  }
+
+  .dialogBottom{
+    width: 100%;
+    display: block;
+    height: 30%;
+    padding: 5px 5px;
+  }
+}

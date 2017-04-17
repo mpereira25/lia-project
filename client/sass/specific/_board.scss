@@ -1,0 +1,70 @@
+.ctBoard{
+  display: inline-block;
+  width: 40%;
+  text-align: left;
+  padding: 15px 0 15px 15px;
+  vertical-align: top;
+  position: relative;
+
+  &:before{
+    content: '';
+    position: absolute;
+    z-index: 0;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+    opacity: 0.5;
+  }
+
+  .board{
+    position: relative;
+    z-index: 1;
+
+    .ctItem{
+      display: inline-block;
+      width: 100%;
+      padding: 0 0 20px 0;
+      vertical-align: top;
+    }
+
+    .labelBoard{
+      display: inline-block;
+      width: 100%;
+      padding: 0 0 20px 0;
+      color: #ffffff;
+      font-size: 25px;
+    }
+    .jaugeBoard{
+      display: inline-block;
+      position: relative;
+      width: 100%;
+      height: 45px;
+      border: solid 1px #ffffff;
+
+      div{
+        position: absolute;
+        display: block;
+        top: 0;
+        left: 0;
+        width: 50%;
+        height: 100%;
+        background-color: #ffffff;
+        @include vendor-prefix(transition, width 0.2s ease-out);
+      }
+      &.low{
+        div{
+          background-color: #ffaa55;
+        }
+      }
+      &.critical{
+        div{
+          background-color: #ff0000;
+        }
+      }
+    }
+  }
+
+}
