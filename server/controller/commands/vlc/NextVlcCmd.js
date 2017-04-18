@@ -3,12 +3,12 @@ APP.NextVlcCmd = (function(ref){
     var _ref = ref;
 
     this.execute = function(resolve){
-        APP.DevicesService.execute(['mocp -f']).then(function(){
+        APP.services.DevicesService.execute(['mocp -f']).then(function(){
             resolve();
         }).catch(function(){
             resolve();
         });
-        APP.SoundEmotionService.playSound('talk');
+        APP.services.SoundEmotionService.playSound('talk');
         resolve();
     }
 

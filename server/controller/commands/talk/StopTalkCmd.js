@@ -4,9 +4,9 @@ APP.StopTalkCmd = (function(ref){
 
     this.execute = function(resolve){
         console.log('stop');
-        APP.DevicesService.stopTalk();
-        _ref.socketController.sendAction('stopTalk', 'stopTalk');
-        APP.SoundEmotionService.playSound('talk');
+        APP.services.DevicesService.stopTalk();
+        APP.services.socketController.sendAction('stopTalk', 'stopTalk');
+        APP.services.SoundEmotionService.playSound('talk');
         _ref.lastServiceLaunch = null;
         resolve();
     }

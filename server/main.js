@@ -92,16 +92,27 @@ APP.initServer = function(){
 };
 
 APP.initModules = function(){
+    // domains
+    APP.services = {};
+    APP.models = {};
+    APP.modules = {};
 
     // init modules
-    var baseModule = new APP.BaseModule();
-    var musicModule = new APP.MusicModule();
-    var temperatureModule = new APP.TemperatureModule();
+    APP.modules.BaseModule = new APP.BaseModule();
+    APP.modules.RobotModule = new APP.RobotModule();
+    APP.modules.MusicModule = new APP.MusicModule();
+    APP.modules.TemperatureModule = new APP.TemperatureModule();
+    APP.modules.YoutubeModule = new APP.YoutubeModule();
+    APP.modules.SearchModule = new APP.SearchModule();
+    APP.modules.SoundcloudModule = new APP.SoundcloudModule();
 
-    baseModule.init(homepageServer);
-    musicModule.init();
-    temperatureModule.init(baseModule);
-
+    APP.modules.BaseModule.init(homepageServer);
+    APP.modules.RobotModule.init();
+    APP.modules.MusicModule.init();
+    APP.modules.TemperatureModule.init();
+    APP.modules.YoutubeModule.init();
+    APP.modules.SearchModule.init();
+    APP.modules.SoundcloudModule.init();
 };
 
 APP.initServer();

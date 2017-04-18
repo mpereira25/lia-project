@@ -3,8 +3,8 @@ APP.NextYoutubeCmd = (function(ref){
     var _ref = ref;
 
     this.execute = function(resolve){
-        APP.VideoService.nextVideo();
-        APP.SoundEmotionService.playSound('talk');
+        APP.services.VideoService.nextVideo();
+        APP.services.SoundEmotionService.playSound('talk');
         resolve();
     }
 

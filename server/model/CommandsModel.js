@@ -1,100 +1,59 @@
-APP.RobotModel = function(){
+APP.CommandsModel = function(){
 
     var _ref = this;
-
     this.islistening = false;
-
     this.wordsToIgnore = 'le la les des de sa son se un une mes me ma mon'.split(' ');
-
-    // BDD TABLES
-    this.CATEGORY_INFOS_LEARNING = [
-        {
-            id: 'gotName',
-            type: 'learn',
-            nameTable: 'personnages',
-            questions: ['Comment tu tappel ?'],
-            confirm: ['Tu tappel {0}. Tu confirmes ?'],
-            answers: ['Tu tappel {0}'],
-            wordsToIgnore: 'appel m\'appel'
-        },
-        {
-            id: 'gotLike',
-            type: 'learn',
-            nameTable: 'personnages_like',
-            questions: ['{name} quest ce que tu aimes ?'],
-            confirm: ['Tu aimes {0}. Tu confirmes ?'],
-            answers: ['Je te connais un peu {name}. Tu aimes {0}'],
-            wordsToIgnore: 'aime j\'aime adore j\'adore'
-        },
-        {
-            id: 'gotWord',
-            type: 'learn',
-            nameTable: 'words',
-            questions: ['Quest ce que {0} ?'],
-            confirm: ['C\'est {0}. Tu confirmes ?'],
-            answers: ['C\'est {0}'],
-            wordsToIgnore: ''
-        }
-    ];
-
-
-    this.LISTENING_WORDS_TALK = [
-        {
-            id: 'talk_1',
-            keyWords: 'salut',
-            type: 'talk',
-            answer: ['Salut'],
-            initiativesNoName: ['gotName'],
-            initiatives: ['gotLike', 'gotWord']
-        },
-        {
-            id: 'talk_2',
-            keyWords: 'comment tu t\'appel',
-            type: 'talk',
-            answer: ['Je m\'appel Liya'],
-            initiativesNoName: ['gotName'],
-            initiatives: ['gotLike', 'gotWord']
-        },
-        {
-            id: 'talk_3',
-            keyWords: 'qui es tu',
-            type: 'talk',
-            answer: ['je suis une intelligence artificiel créé par Michel Pereira.'],
-            initiativesNoName: ['gotName'],
-            initiatives: ['gotLike', 'gotWord']
-        }
-    ];
 
     this.LISTENING_WORDS_ACTION = [
         {
             id: 'stop',
             keyWords: 'stop||arreter||arrêter',
             type: 'execute',
-            commandClasses: [APP.StopCmd]
+            dependanciesCommandClasses: {
+                'YoutubeModule': APP.StopYoutubeCmd,
+                'MusicModule': APP.StopMHardDriveCmd,
+                'SoundcloudModule': APP.StopSoundcloudCmd,
+                'SearchModule': APP.StopTalkCmd
+            }
         },
         {
             id: 'next',
             keyWords: 'suivant',
             type: 'execute',
-            commandClasses: [APP.NextCmd]
+            dependanciesCommandClasses: {
+                'YoutubeModule': APP.NextYoutubeCmd,
+                'MusicModule': APP.NextMHardDriveCmd,
+                'SoundcloudModule': APP.NextSoundcloudCmd
+            }
         },
         {
             id: 'prev',
             keyWords: 'précédent',
             type: 'execute',
-            commandClasses: [APP.PrevCmd]
+            dependanciesCommandClasses: {
+                'YoutubeModule': APP.PrevYoutubeCmd,
+                'MusicModule': APP.PrevMHardDriveCmd,
+                'SoundcloudModule': APP.PrevSoundcloudCmd
+            }
         },
         {
             id: 'random',
             keyWords: 'suivant aléatoire',
             type: 'execute',
-            commandClasses: [APP.RandomCmd]
+            dependanciesCommandClasses: {
+                'YoutubeModule': APP.RandomYoutubeCmd,
+                'MusicModule': APP.RandomMHardDriveCmd,
+                'SoundcloudModule': APP.RandomSoundcloudCmd
+            }
         },
         {
             id: 'current_title',
             keyWords: 'titre en cours de lecture',
             type: 'execute',
-            commandClasses: [APP.GetTitleCmd]
+            dependanciesCommandClasses: {
+                'MusicModule': APP.GetTitleMHardDriveCmd,
+                'SoundcloudModule': APP.GetTitleSoundcloudCmd
+            }
         },
         {
             id: 'volume_up',
@@ -112,6 +71,7 @@ APP.RobotModel = function(){
             id: 'youtube',
             keyWords: 'cherche musique',
             type: 'execute',
+            module: 'YoutubeModule',
             commandClasses: [APP.SearchOnYoutubeCmd]
         },
         {
@@ -121,6 +81,7 @@ APP.RobotModel = function(){
             playlist_title: 'Playlist Années 80.',
             playlist_watch: 'https://www.youtube.com/watch?v=E-8dsWrjC5U&list=PLxJ9pieZcILmr8tjdX_txzNyBl1Nl-TaU&index=',
             playlist: 'https://www.youtube.com/playlist?list=PLxJ9pieZcILmr8tjdX_txzNyBl1Nl-TaU',
+            module: 'YoutubeModule',
             commandClasses: [APP.SearchOnYoutubeCmd]
         },
         {
@@ -130,24 +91,28 @@ APP.RobotModel = function(){
             playlist_title: 'Playlist Michel.',
             playlist_watch: 'https://www.youtube.com/watch?v=-UJX0QpkhhU&list=PLxJ9pieZcILmY8hOLcQESmT_9ViE8OjRO&index=1',
             playlist: 'https://www.youtube.com/playlist?list=PLxJ9pieZcILmY8hOLcQESmT_9ViE8OjRO',
+            module: 'YoutubeModule',
             commandClasses: [APP.SearchOnYoutubeCmd]
         },
         {
             id: 'temperature',
             keyWords: 'donne||donne-moi température',
             type: 'execute',
+            module: 'TemperatureModule',
             commandClasses: [APP.GetTemperaturesCmd]
         },
         {
             id: 'temperature_ext',
             keyWords: 'température extèrieur||exterieur||extérieur',
             type: 'execute',
+            module: 'TemperatureModule',
             commandClasses: [APP.GetTemperatureExtCmd]
         },
         {
             id: 'temperature_int',
             keyWords: 'température intèrieur||interieur||intérieur',
             type: 'execute',
+            module: 'TemperatureModule',
             commandClasses: [APP.GetTemperatureIntCmd]
         },
         {
@@ -290,24 +255,28 @@ APP.RobotModel = function(){
             id: 'music',
             keyWords: 'lance musique',
             type: 'execute',
+            module: 'MusicModule',
             commandClasses: [APP.SearchMHardDriveCmd]
         },
         {
             id: 'searchWeb',
             keyWords: 'dis-moi quel||ou||qu||qui||qu\'est-ce',
             type: 'execute',
+            module: 'SearchModule',
             commandClasses: [APP.SearchOnWebCmd]
         },
         {
             id: 'searchWeb',
             keyWords: 'donne-moi||donnes-moi des infos||info||informations sur',
             type: 'execute',
+            module: 'SearchModule',
             commandClasses: [APP.SearchOnWebCmd]
         },
         {
             id: 'searchWeb',
             keyWords: 'fais une recherche sur',
             type: 'execute',
+            module: 'SearchModule',
             commandClasses: [APP.SearchOnWebCmd]
         },
         {
@@ -320,18 +289,21 @@ APP.RobotModel = function(){
             id: 'getNews',
             keyWords: 'informations||info du jour',
             type: 'execute',
+            module: 'SearchModule',
             commandClasses: [APP.GetNewsCmd]
         },
         {
             id: 'robot_turnArround',
             keyWords: 'tourne toi||tourne-toi',
             type: 'execute',
+            module: 'RobotModule',
             commandClasses: [APP.TurnArroundRobotCmd]
         },
         {
             id: 'robot_turnArround',
             keyWords: 'fais demi tour||demi-tour',
             type: 'execute',
+            module: 'RobotModule',
             commandClasses: [APP.TurnArroundRobotCmd]
         },
         {
@@ -368,6 +340,7 @@ APP.RobotModel = function(){
             id: 'soundcloud',
             keyWords: 'cherche soundcloud',
             type: 'execute',
+            module: 'SoundcloudModule',
             commandClasses: [APP.SearchOnSoundCloudCmd]
         },
         {
@@ -375,49 +348,11 @@ APP.RobotModel = function(){
             keyWords: 'lance soundcloud michel',
             type: 'execute',
             userTracks: '/users/8714838/tracks',
+            module: 'SoundcloudModule',
             commandClasses: [APP.SearchOnSoundCloudCmd]
         }
     ];
 
-    this.getProcessLearning = function(id){
-        var ret;
-        var nb = _ref.CATEGORY_INFOS_LEARNING.length;
-        for (var i = 0; i < nb; i++) {
-            if(_ref.CATEGORY_INFOS_LEARNING[i].id == id){
-                ret = _ref.CATEGORY_INFOS_LEARNING[i];
-            }
-        }
-        return ret;
-    };
-
-    this.getRandomInitiative = function(process, nameClient){
-        var index;
-        var processLearning;
-
-        if(nameClient) {
-            index = Math.floor(Math.random() * process.initiatives.length);
-            processLearning = APP.services.RobotModel.getProcessLearning(process.initiatives[index]);
-        }else{
-            index = Math.floor(Math.random() * process.initiativesNoName.length);
-            processLearning = APP.services.RobotModel.getProcessLearning(process.initiativesNoName[index]);
-        }
-
-        return processLearning;
-    };
-    this.getQuestionsRandom = function(processLearning, nameClient){
-        var ret = processLearning.questions[0];
-
-        if(nameClient){
-            ret = ret.replace('{name}', nameClient);
-        }
-        switch (processLearning.id){
-            case 'gotWord':
-                ret = ret.replace('{0}', 'oiseau');
-                break;
-        }
-
-        return ret;
-    };
     return this;
 
 };

@@ -3,8 +3,8 @@ APP.NextMHardDriveCmd = (function(ref){
     var _ref = ref;
 
     this.execute = function(resolve){
-        APP.MusicService.next();
-        APP.SoundEmotionService.playSound('talk');
+        APP.services.MusicService.next();
+        APP.services.SoundEmotionService.playSound('talk');
         resolve();
     }
 

@@ -5,28 +5,28 @@ APP.SearchOnSoundCloudCmd = (function(dispatcherCmds){
 
     this.execute = function(resolve, powerFullProcess, words){
 
-        _dispatcherCmds.socketController.addEventListener(_dispatcherCmds.socketController.ON_ACTION, function (event, type, data) {
+        APP.services.socketController.addEventListener(APP.services.socketController.ON_ACTION, function (event, type, data) {
 
             if( data == '') return;
 
             switch(type){
                 case 'soundcloud_searchsuccess':
-                    _dispatcherCmds.lastServiceLaunch = 'soundcloud';
+                    _dispatcherCmds.lastServiceLaunch = 'SoundcloudModule';
                     resolve();
                     break;
                 case 'soundcloud_searcherror':
-                    APP.SoundEmotionService.playSound('sad');
-                    _dispatcherCmds.talkController.speech('Aucun résultats');
+                    APP.services.SoundEmotionService.playSound('sad');
+                    APP.services.talkServeCtrl.speech('Aucun résultats');
                     resolve();
                     break;
                 case 'soundcloud_onplay':
-                    _dispatcherCmds.talkController.speech('Lecture en cours. ' + data);
+                    APP.services.talkServeCtrl.speech('Lecture en cours. ' + data);
                     break;
                 case 'soundcloud_onplayerror':
                     resolve();
                     break;
                 case 'soundcloud_ontitle':
-                    _dispatcherCmds.talkController.speech('Lecture en cours. ' + data);
+                    APP.services.talkServeCtrl.speech('Lecture en cours. ' + data);
                     break;
             }
         }, _this);
@@ -35,7 +35,7 @@ APP.SearchOnSoundCloudCmd = (function(dispatcherCmds){
     }
 
     function runSoundcloud(powerFullProcess, words, resolve){
-        APP.SoundEmotionService.playSound('happy');
+        APP.services.SoundEmotionService.playSound('happy');
 
         var searchValue;
         if(powerFullProcess.userTracks){
@@ -56,7 +56,7 @@ APP.SearchOnSoundCloudCmd = (function(dispatcherCmds){
             searchValue = words;
         }
 
-        _dispatcherCmds.socketController.sendAction('soundcloud_search', searchValue);
+        APP.services.socketController.sendAction('soundcloud_search', searchValue);
 
     };
 

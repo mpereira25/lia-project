@@ -122,4 +122,4 @@ APP.VideoService = (function(){
 
     return this;
 
-})();
+});

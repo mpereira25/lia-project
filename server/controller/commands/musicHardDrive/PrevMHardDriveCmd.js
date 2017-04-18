@@ -3,8 +3,8 @@ APP.PrevMHardDriveCmd = (function(ref){
     var _ref = ref;
 
     this.execute = function(resolve){
-        APP.MusicService.prev();
-        APP.SoundEmotionService.playSound('talk');
+        APP.services.MusicService.prev();
+        APP.services.SoundEmotionService.playSound('talk');
         resolve();
     }
 

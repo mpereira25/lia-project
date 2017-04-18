@@ -3,9 +3,9 @@ APP.GetTemperatureIntCmd = (function(ref){
     var _ref = ref;
 
     this.execute = function(resolve){
-        APP.SoundEmotionService.playSound('talk');
-        APP.DevicesService.getTemperature().then(function(result){
-            _ref.talkController.speech(result.int + ' degrés.');
+        APP.services.SoundEmotionService.playSound('talk');
+        APP.services.TemperatureService.getTemperature().then(function(result){
+            APP.services.talkServeCtrl.speech(result.int + ' degrés.');
             resolve();
         }).catch(function(){
             resolve();

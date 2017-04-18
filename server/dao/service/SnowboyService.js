@@ -3,7 +3,7 @@ var wav = require('wav');
 var record = require('node-record-lpcm16');
 var Mic = require('node-microphone');
 
-APP.SnowboyService = (function(socketcontroller, talkController){
+APP.SnowboyService = (function(){
 
     var isInit = false;
     var micStream;
@@ -87,10 +87,10 @@ APP.SnowboyService = (function(socketcontroller, talkController){
             console.log('SnowboyService hotword', index, hotword);
             _ref.stop();
 
-            APP.services.RobotModel.islistening = true;
-            socketcontroller.sendAction('listen_on', 'listen_on');
-            //talkController.speech('Oui ?');
-            APP.SoundEmotionService.playSound('hello');
+            APP.services.CommandsModel.islistening = true;
+            APP.services.socketController.sendAction('listen_on', 'listen_on');
+            //APP.services.talkServeCtrl.speech('Oui ?');
+            APP.services.SoundEmotionService.playSound('hello');
 
             _ref.countStandBy = 0;
             _ref.timeoutStandBy = setInterval(function(){
@@ -98,8 +98,8 @@ APP.SnowboyService = (function(socketcontroller, talkController){
 
                 if(_ref.countStandBy >= 20){
                     clearInterval(_ref.timeoutStandBy);
-                    socketcontroller.sendAction('listen_off', 'listen_off');
-                    APP.SoundEmotionService.playSound('sad');
+                    APP.services.socketController.sendAction('listen_off', 'listen_off');
+                    APP.services.SoundEmotionService.playSound('sad');
                     setTimeout(function(){
                         APP.services.SnowboyService.start();
                     }, 500);

@@ -3,7 +3,7 @@ APP.GetTitleMHardDriveCmd = (function(ref){
     var _ref = ref;
 
     this.execute = function(resolve){
-        _ref.talkController.speech('Lecture en cours. ' + APP.MusicService.getCurrentTitle());
+        APP.services.talkServeCtrl.speech('Lecture en cours. ' + APP.services.MusicService.getCurrentTitle());
         resolve();
     }
 

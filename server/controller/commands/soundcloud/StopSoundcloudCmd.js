@@ -3,8 +3,8 @@ APP.StopSoundcloudCmd = (function(ref){
     var _ref = ref;
 
     this.execute = function(resolve){
-        _ref.socketController.sendAction('soundcloud_stop', 'soundcloud_stop');
-        APP.SoundEmotionService.playSound('talk');
+        APP.services.socketController.sendAction('soundcloud_stop', 'soundcloud_stop');
+        APP.services.SoundEmotionService.playSound('talk');
         _ref.lastServiceLaunch = null;
         resolve();
     }

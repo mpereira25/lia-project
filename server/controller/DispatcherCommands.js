@@ -1,8 +1,6 @@
-APP.DispatcherCommands = function(socketController, talkController){
+APP.DispatcherCommands = function(){
 
     this.lastServiceLaunch = null;
-    this.socketController = socketController;
-    this.talkController = talkController;
     var _ref = this;
 
     this.run = function(words, powerFullProcess, lastServiceLaunch){
@@ -14,7 +12,20 @@ APP.DispatcherCommands = function(socketController, talkController){
             var CommandClass;
 
             if(powerFullProcess.commandClasses && powerFullProcess.commandClasses.length > 0){
-                CommandClass = powerFullProcess.commandClasses[0];
+
+                if(!powerFullProcess.module ||
+                    (powerFullProcess.module && APP.modules[powerFullProcess.module])) {
+                    CommandClass = powerFullProcess.commandClasses[0];
+                    command = new CommandClass(_ref);
+                    command.execute(resolve, powerFullProcess, words, lastServiceLaunch);
+                }else{
+                    console.log("----------");
+                    console.log("ERROR module " + powerFullProcess.module + ' not exist');
+                    console.log("----------");
+                    resolve();
+                }
+            }else if(powerFullProcess.dependanciesCommandClasses && powerFullProcess.dependanciesCommandClasses[_ref.lastServiceLaunch]) {
+                CommandClass = powerFullProcess.dependanciesCommandClasses[_ref.lastServiceLaunch];
                 command = new CommandClass(_ref);
                 command.execute(resolve, powerFullProcess, words, lastServiceLaunch);
             }else{

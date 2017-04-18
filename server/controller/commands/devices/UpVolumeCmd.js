@@ -3,8 +3,8 @@ APP.UpVolumeCmd = (function(ref){
     var _ref = ref;
 
     this.execute = function(resolve){
-        APP.DevicesService.upVolume();
-        APP.SoundEmotionService.playSound('talk');
+        APP.services.DevicesService.upVolume();
+        APP.services.SoundEmotionService.playSound('talk');
         resolve();
     }
 

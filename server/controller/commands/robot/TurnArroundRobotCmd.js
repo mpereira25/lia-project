@@ -8,7 +8,7 @@ APP.TurnArroundRobotCmd = (function(ref){
             return;
         }
 
-        APP.SoundEmotionService.playSound('talk');
+        APP.services.SoundEmotionService.playSound('talk');
         APP.services.RobotDAO.rotateLeft();
         setTimeout(function(){
           APP.services.RobotDAO.stop();

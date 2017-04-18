@@ -18,49 +18,49 @@ APP.SearchMHardDriveCmd = (function(ref){
         searchValue = words;
 
         var funcSearch = function(){
-            APP.MusicService.search(searchValue).then(function(result){
+            APP.services.MusicService.search(searchValue).then(function(result){
                 if(result && result.length == 0){
-                    APP.SoundEmotionService.playSound('sad');
-                    _ref.talkController.speech('Aucun résultats');
+                    APP.services.SoundEmotionService.playSound('sad');
+                    APP.services.talkServeCtrl.speech('Aucun résultats');
                 }else{
                     _ref.lastServiceLaunch = 'music';
-                    APP.MusicService.playList(result);
-                    APP.SoundEmotionService.playSound('happy');
+                    APP.services.MusicService.playList(result);
+                    APP.services.SoundEmotionService.playSound('happy');
                     //_ref.talkController.speech('Lecture en cours. ' + APP.MusicService.getCurrentTitle());
                 }
                 resolve();
             });
         };
 
-        if(APP.MusicService.networkLibPath.length > 0){
-            if(!APP.MusicService.networkLibLoaded) {
-                APP.MusicService.checkNetwork().then(function () {
-                    APP.MusicService.getListNetworkMusic().then(function () {
-                        APP.MusicService.networkAvailable = true;
-                        APP.MusicService.networkLibLoaded = true;
+        if(APP.services.MusicService.networkLibPath.length > 0){
+            if(!APP.services.MusicService.networkLibLoaded) {
+                APP.services.MusicService.checkNetwork().then(function () {
+                    APP.services.MusicService.getListNetworkMusic().then(function () {
+                        APP.services.MusicService.networkAvailable = true;
+                        APP.services.MusicService.networkLibLoaded = true;
                         funcSearch();
                     }).catch(function () {
-                        APP.MusicService.networkAvailable = false;
-                        APP.MusicService.networkLibLoaded = false;
+                        APP.services.MusicService.networkAvailable = false;
+                        APP.services.MusicService.networkLibLoaded = false;
                         funcSearch();
                     })
                 }).catch(function () {
-                    APP.MusicService.networkAvailable = false;
+                    APP.services.MusicService.networkAvailable = false;
                     funcSearch();
                 });
 
 
             }else{
-                APP.MusicService.checkNetwork().then(function () {
-                    APP.MusicService.networkAvailable = true;
+                APP.services.MusicService.checkNetwork().then(function () {
+                    APP.services.MusicService.networkAvailable = true;
                     funcSearch();
                 }).catch(function () {
-                    APP.MusicService.networkAvailable = false;
+                    APP.services.MusicService.networkAvailable = false;
                     funcSearch();
                 });
             }
         }else{
-            APP.MusicService.networkAvailable = false;
+            APP.services.MusicService.networkAvailable = false;
             funcSearch();
         }
     }

@@ -3,9 +3,9 @@ APP.StopYoutubeCmd = (function(ref){
     var _ref = ref;
 
     this.execute = function(resolve){
-        APP.VideoService.closeVideo();
+        APP.services.VideoService.closeVideo();
         _ref.lastServiceLaunch = null;
-        APP.SoundEmotionService.playSound('talk');
+        APP.services.SoundEmotionService.playSound('talk');
         resolve();
     }
 

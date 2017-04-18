@@ -269,4 +269,4 @@ APP.MusicService = (function(){
     };
     return this;
 
-})();
+});

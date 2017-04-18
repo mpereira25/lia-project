@@ -1,6 +1,9 @@
+var EventBus = require('eventbusjs');
+
 APP.RobotDAO = function(){
-    this.callBacks;
-    this.callBacksInit;
+    this.ON_INFO = 'RobotDAO.ON_INFO';
+    this.ON_INIT = 'RobotDAO.ON_INIT';
+
     this.disabled = false;
 
     var _ref = this;
@@ -20,6 +23,13 @@ APP.RobotDAO = function(){
     var isMove = false;
 
     var Gopigo;
+
+    this.addEventListener = function(type, callback, scope) {
+        EventBus.addEventListener(type, callback, scope);
+    }
+    this.removeEventListener = function(type, callback, scope) {
+        EventBus.removeEventListener(type, callback, scope);
+    }
 
     try {
         Gopigo = require('node-gopigo').Gopigo;
@@ -79,30 +89,25 @@ APP.RobotDAO = function(){
     });
     robot.on('normalVoltage', function onNormalVoltage(voltage) {
         console.log('Voltage is ok [' + voltage + ']');
-        if(_ref.callBacks){
-            _ref.callBacks(APP.SOCKET_MESSAGE.VOLTAGE_NORMAL);
-        }
+        EventBus.dispatch(_ref.ON_INFO, _ref, APP.SOCKET_MESSAGE.VOLTAGE_NORMAL);
     });
     robot.on('lowVoltage', function onLowVoltage(voltage) {
         console.log('(!!) Voltage is low [' + voltage + ']');
-        if(_ref.callBacks){
-            _ref.callBacks(APP.SOCKET_MESSAGE.VOLTAGE_LOW);
-        }
+        EventBus.dispatch(_ref.ON_INFO, _ref, APP.SOCKET_MESSAGE.VOLTAGE_LOW);
+
     });
     robot.on('criticalVoltage', function onCriticalVoltage(voltage) {
         console.log('(!!!) Voltage is critical [' + voltage + ']');
-        if(_ref.callBacks){
-            _ref.callBacks(APP.SOCKET_MESSAGE.VOLTAGE_CRITICAL);
-        }
+        EventBus.dispatch(_ref.ON_INFO, _ref, APP.SOCKET_MESSAGE.VOLTAGE_CRITICAL);
+
     });
     robot.init();
 
 
     this.init = function(){
         console.log("APP.RobotDAO init");
-        if(_ref.callBacksInit){
-            _ref.callBacksInit();
-        }
+        EventBus.dispatch(_ref.ON_INIT, _ref);
+
     };
     this.getVoltage = function(){
         try{

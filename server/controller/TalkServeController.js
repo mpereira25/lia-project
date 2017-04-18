@@ -1,4 +1,4 @@
-APP.TalkServeCtrl = function(socketController){
+APP.TalkServeCtrl = function(){
 
 
     var isLoading = false;
@@ -11,14 +11,14 @@ APP.TalkServeCtrl = function(socketController){
     var lastServiceLaunch = null;
     var _ref = this;
 
-    socketController.addEventListener(socketController.ON_TALK_END, function(event, data){
+    APP.services.socketController.addEventListener(APP.services.socketController.ON_TALK_END, function(event, data){
         if(lastServiceLaunch === 'searchWeb' || lastServiceLaunch === 'getNews'){
             lastServiceLaunch = null;
             releaseTalk();
         }
     }, this);
 
-    socketController.addEventListener(socketController.ON_TALK, function(event, data){
+    APP.services.socketController.addEventListener(APP.services.socketController.ON_TALK, function(event, data){
         //console.log('callBackTalk ' + data);
 
         data = data.split(',')[0];
@@ -39,43 +39,43 @@ APP.TalkServeCtrl = function(socketController){
         var flag = true;
 
         // remove ignore words
-        nb = APP.services.RobotModel.wordsToIgnore.length;
+        nb = APP.models.CommandsModel.wordsToIgnore.length;
         for (i = 0; i < nb; i++) {
-            index = words.indexOf(APP.services.RobotModel.wordsToIgnore[i]);
+            index = words.indexOf(APP.models.CommandsModel.wordsToIgnore[i]);
             if(index != -1){
                 words.splice(index, 1);
             }
         }
 
         if(!processLearning) {
-            nb = APP.services.RobotModel.LISTENING_WORDS_TALK.length;
+            nb = APP.models.TalkModel.LISTENING_WORDS_TALK.length;
             nb2 = words.length;
 
             for (i = 0; i < nb && flag; i++) {
                 currentPower = 0;
                 for (j = 0; j < nb2; j++) {
-                    if(APP.services.RobotModel.LISTENING_WORDS_TALK[i].keyWords.indexOf(words[j]) != -1){
+                    if(APP.models.TalkModel.LISTENING_WORDS_TALK[i].keyWords.indexOf(words[j]) != -1){
                         currentPower++;
                     }
                 }
                 if(currentPower > power) {
                     power = currentPower;
-                    powerFullProcess = APP.services.RobotModel.LISTENING_WORDS_TALK[i];
-                    if(currentPower == nb2 && currentPower == APP.services.RobotModel.LISTENING_WORDS_TALK[i].keyWords.split(' ').length){
+                    powerFullProcess = APP.models.TalkModel.LISTENING_WORDS_TALK[i];
+                    if(currentPower == nb2 && currentPower == APP.models.TalkModel.LISTENING_WORDS_TALK[i].keyWords.split(' ').length){
                         flag = false;
                     }
                 }
             }
 
 
-            nb = APP.services.RobotModel.LISTENING_WORDS_ACTION.length;
+            nb = APP.models.CommandsModel.LISTENING_WORDS_ACTION.length;
 
             var keywords;
             var k;
             for (i = 0; i < nb && flag; i++) {
                 currentPower = 0;
                 for (j = 0; j < nb2; j++) {
-                    keywords = APP.services.RobotModel.LISTENING_WORDS_ACTION[i].keyWords.split(' ');
+                    keywords = APP.models.CommandsModel.LISTENING_WORDS_ACTION[i].keyWords.split(' ');
 
                     for (k = 0; k < keywords.length; k++) {
                         if(keywords[k].indexOf(words[j]) != -1){
@@ -86,7 +86,7 @@ APP.TalkServeCtrl = function(socketController){
                 }
                 if(currentPower > power && Math.abs(nb2 - keywords.length) <= 3 ) {
                     power = currentPower;
-                    powerFullProcess = APP.services.RobotModel.LISTENING_WORDS_ACTION[i];
+                    powerFullProcess = APP.models.CommandsModel.LISTENING_WORDS_ACTION[i];
                     if(currentPower == nb2){
                         flag = false;
                     }
@@ -115,26 +115,26 @@ APP.TalkServeCtrl = function(socketController){
                             if(powerFullProcess.id == 'talk_1')
                             {
                                 nameClient = null;
-                                APP.SoundEmotionService.playSound('hello');
+                                APP.services.SoundEmotionService.playSound('hello');
                             }
                             else if(powerFullProcess.id == 'talk_3')
                             {
-                                APP.SoundEmotionService.playSound('talk');
+                                APP.services.SoundEmotionService.playSound('talk');
                             }else{
-                                APP.SoundEmotionService.playSound('talk');
+                                APP.services.SoundEmotionService.playSound('talk');
                             }
 
                             /*if(!nameClient){
                                 if(powerFullProcess.initiativesNoName){
-                                    processLearning = APP.services.RobotModel.getRandomInitiative(powerFullProcess);
-                                    _ref.speech(powerFullProcess.answer[0] + '. ' + APP.services.RobotModel.getQuestionsRandom(processLearning));
+                                    processLearning = APP.models.TalkModel.getRandomInitiative(powerFullProcess);
+                                    _ref.speech(powerFullProcess.answer[0] + '. ' + APP.models.TalkModel.getQuestionsRandom(processLearning));
                                 }else{
                                     _ref.speech(powerFullProcess.answer[0]);
                                 }
                             }else{
                                 if(powerFullProcess.initiatives){
-                                    processLearning = APP.services.RobotModel.getRandomInitiative(powerFullProcess, nameClient);
-                                    _ref.speech(powerFullProcess.answer[0] + '. ' + APP.services.RobotModel.getQuestionsRandom(processLearning, nameClient));
+                                    processLearning = APP.models.TalkModel.getRandomInitiative(powerFullProcess, nameClient);
+                                    _ref.speech(powerFullProcess.answer[0] + '. ' + APP.models.TalkModel.getQuestionsRandom(processLearning, nameClient));
                                 }else{
                                     _ref.speech(powerFullProcess.answer[0]);
                                 }
@@ -142,7 +142,7 @@ APP.TalkServeCtrl = function(socketController){
                             releaseTalk();
                             break;
                         default:
-                            APP.SoundEmotionService.playSound('talk');
+                            APP.services.SoundEmotionService.playSound('talk');
                             releaseTalk();
                             break;
                     }
@@ -150,7 +150,7 @@ APP.TalkServeCtrl = function(socketController){
                     releaseTalk();
                 }
             }else{
-                APP.SoundEmotionService.playSound('talk');
+                APP.services.SoundEmotionService.playSound('talk');
                 releaseTalk();
             }
         }else{
@@ -203,16 +203,16 @@ APP.TalkServeCtrl = function(socketController){
     }, this);
 
     this.speech = function(msg){
-        socketController.talk(APP.SOCKET_MESSAGE.TALK, msg);
+        APP.services.socketController.talk(APP.SOCKET_MESSAGE.TALK, msg);
 
         var split2 = msg.split('||');
         var paramMsg = split2[0];
         var param = split2.length > 1 ? split2[1] : null;
 
-        APP.DevicesService.textToSpeech(paramMsg).then(function(){
-            socketController.sendAction('textToSpeech_end', paramMsg);
+        APP.services.DevicesService.textToSpeech(paramMsg).then(function(){
+            APP.services.socketController.sendAction('textToSpeech_end', paramMsg);
         }).catch(function(){
-            socketController.sendAction('textToSpeech_end_failed', msg);
+            APP.services.socketController.sendAction('textToSpeech_end_failed', msg);
         });
     };
 

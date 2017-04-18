@@ -1,16 +1,14 @@
 APP.TemperatureModule = (function(){
 
     var lastTemperature = {ext: 15, int: 19};
-    var talkServeCtrl = null;
     var _ref = this;
 
-    this.init = function(baseModule){
-
-        talkServeCtrl = baseModule.talkServeCtrl;
+    this.init = function(){
 
         // start check temperature
-        APP.DevicesService.startCheckTemperature();
-        APP.DevicesService.addEventListener(APP.DevicesService.ON_CHECK_TEMPERATURE, callBackCheck, _ref);
+        APP.services.TemperatureService = new APP.TemperatureService();
+        APP.services.TemperatureService.startCheckTemperature();
+        APP.services.TemperatureService.addEventListener(APP.services.TemperatureService.ON_CHECK_TEMPERATURE, callBackCheck, _ref);
 
     }
 
@@ -43,7 +41,7 @@ APP.TemperatureModule = (function(){
         }
 
         if(flag){
-            talkServeCtrl.speech(str);
+            APP.services.talkServeCtrl.speech(str);
         }
 
         lastTemperature.ext = result.ext;

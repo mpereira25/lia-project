@@ -176,4 +176,4 @@ APP.SearchService = (function(){
     }
 
     return this;
-})();
+});

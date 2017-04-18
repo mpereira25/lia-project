@@ -3,8 +3,8 @@ APP.PrevYoutubeCmd = (function(ref){
     var _ref = ref;
 
     this.execute = function(resolve){
-        APP.VideoService.prevVideo();
-        APP.SoundEmotionService.playSound('talk');
+        APP.services.VideoService.prevVideo();
+        APP.services.SoundEmotionService.playSound('talk');
         resolve();
     }
 

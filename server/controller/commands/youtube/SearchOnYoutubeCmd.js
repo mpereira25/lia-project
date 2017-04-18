@@ -6,7 +6,7 @@ APP.SearchOnYoutubeCmd = (function(ref){
     }
 
     function runYoutube(powerFullProcess, words, resolve){
-        APP.SoundEmotionService.playSound('happy');
+        APP.services.SoundEmotionService.playSound('happy');
 
         var searchValue;
         if(powerFullProcess.playlist){
@@ -29,8 +29,7 @@ APP.SearchOnYoutubeCmd = (function(ref){
 
         //_ref.socketController.sendAction('youtube', searchValue);
 
-        var youtubeService = new APP.YoutubeService();
-        youtubeService.search(searchValue).then(function(result){
+        APP.services.YoutubeService.search(searchValue).then(function(result){
             console.log(result);
             var split2 = result.split('---');
             var tab = [];
@@ -50,23 +49,23 @@ APP.SearchOnYoutubeCmd = (function(ref){
                 })
             }
             if(tab.length > 0){
-                _ref.lastServiceLaunch = 'youtube';
-                APP.VideoService.setListVideos(tab);
-                APP.VideoService.play().then(function(title){
-                    _ref.talkController.speech('Lecture en cours. ' + title);
+                _ref.lastServiceLaunch = 'YoutubeModule';
+                APP.services.VideoService.setListVideos(tab);
+                APP.services.VideoService.play().then(function(title){
+                    APP.services.talkServeCtrl.speech('Lecture en cours. ' + title);
                     resolve();
                 }).catch(function(){
                     resolve();
                 });
             }else{
-                APP.SoundEmotionService.playSound('sad');
-                _ref.talkController.speech('Aucun résultats');
+                APP.services.SoundEmotionService.playSound('sad');
+                APP.services.talkServeCtrl.speech('Aucun résultats');
                 resolve();
             }
         }).catch(function(error){
             console.log('error ' + error);
-            _ref.talkController.speech('Aucun résultats');
-            APP.SoundEmotionService.playSound('sad');
+            APP.services.talkServeCtrl.speech('Aucun résultats');
+            APP.services.SoundEmotionService.playSound('sad');
             resolve();
         });
     };

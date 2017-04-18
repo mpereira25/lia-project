@@ -69,4 +69,4 @@ APP.SoundEmotionService = (function(){
 
     return this;
 
-})();
+});
