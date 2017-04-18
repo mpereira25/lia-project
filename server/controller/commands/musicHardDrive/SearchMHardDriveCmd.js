@@ -2,6 +2,13 @@ APP.SearchMHardDriveCmd = (function(ref){
 
     var _ref = ref;
     this.execute = function(resolve, powerFullProcess, words){
+
+        if(words === '') {
+            var command = new APP.PlayAllMHardDriveCmd(_ref);
+            command.execute(resolve, powerFullProcess, words);
+            return;
+        }
+
         var searchValue;
         // remove ignore words
         var ignore = powerFullProcess.keyWords.split(' ');
@@ -23,7 +30,7 @@ APP.SearchMHardDriveCmd = (function(ref){
                     APP.services.SoundEmotionService.playSound('sad');
                     APP.services.talkServeCtrl.speech('Aucun résultats');
                 }else{
-                    _ref.lastServiceLaunch = 'music';
+                    _ref.lastServiceLaunch = 'MusicModule';
                     APP.services.MusicService.playList(result);
                     APP.services.SoundEmotionService.playSound('happy');
                     //_ref.talkController.speech('Lecture en cours. ' + APP.MusicService.getCurrentTitle());

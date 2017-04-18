@@ -158,6 +158,17 @@ APP.MusicService = (function(){
         _ref.playMusic(_currentPlayList[_currentIndexPlaylist]);
     };
 
+    this.playAll = function() {
+        var result = _list;
+        if(_ref.networkAvailable){
+            list = result.concat(_listNetwork);
+        }
+
+        _currentPlayList = result;
+        _currentIndexPlaylist = 0;
+        _ref.playMusic(_currentPlayList[_currentIndexPlaylist]);
+    };
+
     this.playMusic = function(value) {
 
         var exec = require('child_process').exec;
@@ -170,8 +181,6 @@ APP.MusicService = (function(){
 
         });
         child.on('close', function(code) {
-            exec = require('child_process').exec;
-
             var list = '';
             var nb = _currentPlayList.length-1;
             var indexTemp = _currentPlayList.indexOf(value);
@@ -260,6 +269,7 @@ APP.MusicService = (function(){
             console.log('closing code: ' + code);
         });
     };
+
     this.getCurrentTitle = function(){
         var title = _currentPlayList[_currentIndexPlaylist];
         var tab = title.split('/');

@@ -12,7 +12,7 @@ APP.TalkServeCtrl = function(){
     var _ref = this;
 
     APP.services.socketController.addEventListener(APP.services.socketController.ON_TALK_END, function(event, data){
-        if(lastServiceLaunch === 'searchWeb' || lastServiceLaunch === 'getNews'){
+        if(lastServiceLaunch === 'SearchModule'){
             lastServiceLaunch = null;
             releaseTalk();
         }

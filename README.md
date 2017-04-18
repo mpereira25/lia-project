@@ -20,6 +20,7 @@ Need Internet connexion for SpeechToText (Annyang js use native Chrome voice rec
 # Current implemented Modules
 - Get news of the day
 - Get Date and Clock
+- Search/Play local music mp3
 - Youtube search (use browser with parsing result search html)
 - Wikipedia search (use browser with parsing result search html)
 - Soundcloud search (With api. Need key)
