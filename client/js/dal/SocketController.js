@@ -60,7 +60,7 @@ APP.SocketController = function(){
             }
         });
         socket.on('lia_action', function (message) {
-            //console.log('Socket receive : ' + message);
+            console.log('Socket receive : ' + message);
 
             var split = message.split('::');
             var type = split[0];

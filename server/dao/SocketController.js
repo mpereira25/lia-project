@@ -28,7 +28,7 @@ APP.SocketController = function(server){
         _socket = socket;
         _ref.socket = socket;
 
-        if(APP.services.RobotModel.islistening){
+        if(APP.models.TalkModel.islistening){
             _ref.sendAction('listen_on', 'listen_on');
         }else{
             _ref.sendAction('listen_off', 'listen_off');
@@ -80,31 +80,16 @@ APP.SocketController = function(server){
             if( split[1] == '') return;
 
             switch(type){
-                case 'youtube':
-
-                    var split2 = split[1].split('---');
-                    var tab = [];
-                    for (var i = 0; i < split2.length; i++) {
-                        var tempSplit = split2[i].split('||');
-                        tab.push({
-                            urlVideo: tempSplit[0],
-                            title: tempSplit[1]
-                        })
-                    }
-
-                    APP.VideoService.setListVideos(tab);
-                    APP.VideoService.play();
-                    break;
                 case 'listen_switch':
-                    APP.services.RobotModel.islistening = !APP.services.RobotModel.islistening;
+                    APP.models.TalkModel.islistening = !APP.models.TalkModel.islistening;
 
-                    if(APP.services.RobotModel.islistening){
+                    if(APP.models.TalkModel.islistening){
                         APP.services.SnowboyService.stop();
                         _ref.sendAction('listen_on', 'listen_on');
-                        APP.SoundEmotionService.playSound('hello');
+                        APP.services.SoundEmotionService.playSound('hello');
                     }else{
                         _ref.sendAction('listen_off', 'listen_off');
-                        APP.SoundEmotionService.playSound('sad');
+                        APP.services.SoundEmotionService.playSound('sad');
                         setTimeout(function(){
                             APP.services.SnowboyService.start();
                         }, 1500);
@@ -112,7 +97,7 @@ APP.SocketController = function(server){
 
                     break;
                 case 'get_listen_state':
-                    if(APP.services.RobotModel.islistening){
+                    if(APP.models.TalkModel.islistening){
                         APP.services.SnowboyService.stop();
                         _ref.sendAction('listen_on', 'listen_on');
                     }else{
@@ -126,13 +111,13 @@ APP.SocketController = function(server){
 
                 case 'halt':
                     //_ref.talkController.speech('Au revoir');
-                    APP.SoundEmotionService.playSound('sad');
-                    APP.DevicesService.halt();
+                    APP.services.SoundEmotionService.playSound('sad');
+                    APP.services.DevicesService.halt();
                     break;
 
                 case 'reboot':
                     _ref.talkController.speech('Reboot');
-                    APP.DevicesService.reboot();
+                    APP.services.DevicesService.reboot();
                     break;
             }
 

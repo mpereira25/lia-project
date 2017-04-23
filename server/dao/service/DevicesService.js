@@ -156,13 +156,13 @@ APP.DevicesService = (function(){
     };
 
     this.stopTalk = function() {
-        _textToSpeechWav.stop();
-        var childRemove = exec('rm pico2wave/rec' + _indexWav + '.wav');
         if(_resolveTextToSpeech){
+            _textToSpeechWav.stop();
+            _textToSpeechWav = null;
+            var childRemove = exec('rm pico2wave/rec' + _indexWav + '.wav');
             _resolveTextToSpeech();
             _resolveTextToSpeech = null;
         }
-
     }
 
     this.halt = function(){

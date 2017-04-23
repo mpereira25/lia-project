@@ -13,7 +13,8 @@ APP.CommandsModel = function(){
                 'YoutubeModule': APP.StopYoutubeCmd,
                 'MusicModule': APP.StopMHardDriveCmd,
                 'SoundcloudModule': APP.StopSoundcloudCmd,
-                'SearchModule': APP.StopTalkCmd
+                'SearchModule': APP.StopTalkCmd,
+                'vlc': APP.StopVlcCmd
             }
         },
         {

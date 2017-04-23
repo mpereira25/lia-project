@@ -29,6 +29,7 @@ APP.start = function(){
 
     // LISTEN SOCKET
     APP.socketController.addEventListener(APP.socketController.ON_ACTION, function(event, type, param){
+        console.log('ON_ACTION ' + type);
 
         switch(type){
             case "listen_on":
@@ -63,6 +64,7 @@ APP.start = function(){
                 APP.talkController.speech(msg, dontStopListening);
                 break;
             case "stopTalk":
+                console.log('client stopTalk');
                 APP.talkController.stopSpeech();
                 break;
             case "soundcloud_search":
