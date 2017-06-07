@@ -1,9 +1,9 @@
-APP.StandbySnowboyCmd = (function(ref){
+APP.CameraOnCmd = (function(ref){
 
     var _ref = ref;
 
     this.execute = function(resolve){
-        APP.services.SnowboyService.start();
+        APP.services.DevicesService.cameraOn();
         resolve();
     }
 

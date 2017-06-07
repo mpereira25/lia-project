@@ -1,0 +1,21 @@
+{
+    "hotword": {
+        "file": "snowboy.umdl",
+        "sensitivity": 0.8,
+        "hotwords": "snowboy",
+        "sleepAfterSeconds": 40
+    },
+    "soundBB8": true,
+    "musicModule": {
+        "path": [
+            "/data/Musiques/"
+        ],
+        "networkPath": [
+            "mp3/",
+            "mp3_2/"
+        ]
+    },
+    "soundcloudModule": {
+        "key": ""
+    }
+}

@@ -3,12 +3,6 @@ APP.SearchMHardDriveCmd = (function(ref){
     var _ref = ref;
     this.execute = function(resolve, powerFullProcess, words){
 
-        if(words === '') {
-            var command = new APP.PlayAllMHardDriveCmd(_ref);
-            command.execute(resolve, powerFullProcess, words);
-            return;
-        }
-
         var searchValue;
         // remove ignore words
         var ignore = powerFullProcess.keyWords.split(' ');
@@ -23,6 +17,13 @@ APP.SearchMHardDriveCmd = (function(ref){
         }
 
         searchValue = words;
+
+        console.log('SearchMHardDriveCmd : ' + searchValue);
+        if(searchValue.length === 0) {
+            var command = new APP.PlayAllMHardDriveCmd(_ref);
+            command.execute(resolve, powerFullProcess, words);
+            return;
+        }
 
         var funcSearch = function(){
             APP.services.MusicService.search(searchValue).then(function(result){

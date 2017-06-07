@@ -5,7 +5,7 @@ APP.MusicService = (function(){
     var _ref = this;
     const fs = require('fs');
 
-    var _currentPlayList = 0;
+    var _currentPlayList = null;
     var _currentIndexPlaylist = 0;
     var _list = [];
     var _listNetwork = [];
@@ -166,13 +166,13 @@ APP.MusicService = (function(){
 
         _currentPlayList = result;
         _currentIndexPlaylist = 0;
-        _ref.playMusic(_currentPlayList[_currentIndexPlaylist]);
+        _ref.playMusic(_currentPlayList[_currentIndexPlaylist], true);
     };
 
-    this.playMusic = function(value) {
+    this.playMusic = function(value, shuffle) {
 
         var exec = require('child_process').exec;
-        var child = exec('mocp -u shuffle');
+        var child = shuffle ? exec('mocp -o shuffle') : exec('mocp -u shuffle');
         child.stdout.on('data', function(data) {
             console.log('stdout: ' + data);
         });
@@ -210,54 +210,66 @@ APP.MusicService = (function(){
             });
         });
     };
-    this.next = function() {
+    this.nextList = function() {
         if(_currentIndexPlaylist+1 < _currentPlayList.length){
             _currentIndexPlaylist++;
 
             _ref.playMusic(_currentPlayList[_currentIndexPlaylist]);
         }
     };
-    this.prev = function() {
+    this.prevList = function() {
         if(_currentIndexPlaylist-1 >= 0){
             _currentIndexPlaylist--;
 
             _ref.playMusic(_currentPlayList[_currentIndexPlaylist]);
         }
     };
-    this.stop = function() {
 
-        var exec = require('child_process').exec;
-        var child = exec('mocp -s');
-        child.stdout.on('data', function(data) {
-            console.log('stdout: ' + data);
-        });
-        child.stderr.on('data', function(data) {
-            console.log('stdout: ' + data);
-
-        });
-        child.on('close', function(code) {
-            console.log('closing code: ' + code);
-        });
+    this.next = function() {
+        if(_currentPlayList) {
+            _ref.nextList();
+        }else{
+            _ref.exec('mocp -f');
+        }
     };
+
+    this.prev = function() {
+        if(_currentPlayList) {
+            _ref.prevList();
+        }else{
+            _ref.exec('mocp -r');
+        }
+    };
+
+    this.shuffle = function() {
+        _ref.exec('mocp -o shuffle');
+    };
+
+    this.noshuffle = function() {
+        _ref.exec('mocp -u shuffle');
+    };
+
+    this.forwind = function() {
+        _ref.exec('mocp -k 30');
+    };
+
     this.pause = function() {
-
-        var exec = require('child_process').exec;
-        var child = exec('mocp -P');
-        child.stdout.on('data', function(data) {
-            console.log('stdout: ' + data);
-        });
-        child.stderr.on('data', function(data) {
-            console.log('stdout: ' + data);
-
-        });
-        child.on('close', function(code) {
-            console.log('closing code: ' + code);
-        });
+        _ref.exec('mocp -P');
     };
+
     this.resume = function() {
+        _ref.exec('mocp -U');
+    };
+
+    this.stop = function() {
+        _ref.exec('mocp -s');
+        _currentPlayList = null;
+    };
+
+    this.exec = function(str) {
 
         var exec = require('child_process').exec;
-        var child = exec('mocp -U');
+        var child = exec(str);
         child.stdout.on('data', function(data) {
             console.log('stdout: ' + data);
         });

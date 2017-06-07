@@ -8,12 +8,11 @@ APP.TalkServeCtrl = function(){
     var wordToConfirm = false;
     var nameClient = null;
 
-    var lastServiceLaunch = null;
     var _ref = this;
 
     APP.services.socketController.addEventListener(APP.services.socketController.ON_TALK_END, function(event, data){
-        if(lastServiceLaunch === 'SearchModule'){
-            lastServiceLaunch = null;
+        if(APP.lastServiceLaunch === 'SearchModule'){
+            APP.lastServiceLaunch = null;
             releaseTalk();
         }
     }, this);
@@ -84,7 +83,10 @@ APP.TalkServeCtrl = function(){
                     }
 
                 }
-                if(currentPower > power && Math.abs(nb2 - keywords.length) <= 3 ) {
+                if(APP.models.CommandsModel.LISTENING_WORDS_ACTION[i].keyWords !== '' &&
+                    currentPower > power &&
+                    Math.abs(nb2 - keywords.length) <= 3 ) 
+                {
                     power = currentPower;
                     powerFullProcess = APP.models.CommandsModel.LISTENING_WORDS_ACTION[i];
                     if(currentPower == nb2){
@@ -95,17 +97,17 @@ APP.TalkServeCtrl = function(){
 
             if(powerFullProcess) {
 
-                if( ((lastServiceLaunch === 'searchWeb' || lastServiceLaunch === 'getNews') && powerFullProcess.id === 'stop') ||
-                    !lastServiceLaunch ||
-                    (lastServiceLaunch !== 'searchWeb' && lastServiceLaunch !== 'getNews')) {
+                if( ((APP.lastServiceLaunch === 'searchWeb' || APP.lastServiceLaunch === 'getNews') && powerFullProcess.id === 'stop') ||
+                    !APP.lastServiceLaunch ||
+                    (APP.lastServiceLaunch !== 'searchWeb' && APP.lastServiceLaunch !== 'getNews')) {
 
                     APP.services.SnowboyService.countStandBy = 0;
 
                     switch(powerFullProcess.type){
                         case 'execute':
-                            APP.services.DispatcherCommands.run(words, powerFullProcess, lastServiceLaunch).then(function(){
-                                lastServiceLaunch = APP.services.DispatcherCommands.lastServiceLaunch;
-                                console.log('lastServiceLaunch : ' + lastServiceLaunch);
+                            APP.services.DispatcherCommands.run(words, powerFullProcess, APP.lastServiceLaunch).then(function(){
+                                APP.lastServiceLaunch = APP.services.DispatcherCommands.lastServiceLaunch;
+                                console.log('lastServiceLaunch : ' + APP.lastServiceLaunch);
                             }).catch(function(){
 
                             });

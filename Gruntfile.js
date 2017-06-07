@@ -21,7 +21,7 @@ module.exports = function (grunt) {
             },
             server: {
                 src: ['server/app.js', 'common/**/*.js', 'server/utils/**/*.js', 'server/dao/**/*.js', 'server/model/**/*.js', 'server/controller/**/*.js', 'server/service/**/*.js', 'server/modules/**/*.js', 'server/main.js'],
-                dest: 'build/server.js'
+                dest: 'server.js'
             }
         },
         clean:{
@@ -133,7 +133,7 @@ module.exports = function (grunt) {
             node: {
                 cmd: 'node',
                 args: [
-                    'build/server.js'
+                    'server.js'
                 ]
             },
             cordovaAndroid: {

@@ -12,10 +12,13 @@ APP.SnowboyService = (function(){
     var models;
     var mic;
     var detector;
+    var _startTimeout = -1;
+
     var _ref = this;
 
     var timeoutStandBy = -1;
     this.countStandBy = 0;
+    this.standByValue = APP.configJSON.hotword.sleepAfterSeconds;
     this.isStop = true;
 
     try{
@@ -33,15 +36,26 @@ APP.SnowboyService = (function(){
         models = new Models();
 
         models.add({
-            file: 'snowboy.umdl',
-            sensitivity: '0.8',
-            hotwords : 'snowboy'
+            file: APP.configJSON.hotword.file,
+            sensitivity: APP.configJSON.hotword.sensitivity,
+            hotwords : APP.configJSON.hotword.hotwords
         });
 
 
     }
 
-    this.start = function(){
+    this.start = function(sound){
+
+        if(!isInit) return;
+        APP.models.TalkModel.islistening = false;
+        APP.services.socketController.sendAction('listen_off', 'listen_off');
+
+        clearTimeout(_startTimeout);
+        _startTimeout = setTimeout(function(){
+            _ref._start();
+        }, 1500);
+    }
+    this._start = function(){
         if(!isInit) return;
 
         if(record){
@@ -85,27 +99,8 @@ APP.SnowboyService = (function(){
         detector.on('hotword', function (index, hotword) {
 
             console.log('SnowboyService hotword', index, hotword);
-            _ref.stop();
-
-            APP.services.CommandsModel.islistening = true;
-            APP.services.socketController.sendAction('listen_on', 'listen_on');
-            //APP.services.talkServeCtrl.speech('Oui ?');
             APP.services.SoundEmotionService.playSound('hello');
-
-            _ref.countStandBy = 0;
-            _ref.timeoutStandBy = setInterval(function(){
-                _ref.countStandBy++;
-
-                if(_ref.countStandBy >= 20){
-                    clearInterval(_ref.timeoutStandBy);
-                    APP.services.socketController.sendAction('listen_off', 'listen_off');
-                    APP.services.SoundEmotionService.playSound('sad');
-                    setTimeout(function(){
-                        APP.services.SnowboyService.start();
-                    }, 500);
-                }
-            }, 1000);
-
+            _ref.stop();
         });
 
         clearInterval(_ref.timeoutStandBy);
@@ -128,9 +123,35 @@ APP.SnowboyService = (function(){
             device: 'plughw:1,0'
         }).pipe(detector);*/
     };
+    this.startTimeout = function(){
+        clearInterval(_ref.timeoutStandBy);
+        _ref.countStandBy = 0;
+        _ref.timeoutStandBy = setInterval(function(){
+            _ref.countStandBy++;
 
+            if(_ref.countStandBy >= _ref.standByValue){
+                clearInterval(_ref.timeoutStandBy);
+                APP.services.SoundEmotionService.playSound('sad');
+                _ref.start();
+            }
+        }, 1000);
+    }
     this.stop = function(){
         if(!isInit) return;
+
+        clearTimeout(_startTimeout);
+        APP.models.TalkModel.islistening = true;
+        APP.services.socketController.sendAction('listen_on', 'listen_on');
+        //APP.services.talkServeCtrl.speech('Oui ?');
+
+        _ref.startTimeout();
+
+        _ref._stop();
+    };
+
+    this._stop = function(){
+        if(!isInit) return;
+
         console.log('SnowboyService stop');
         if(record){
             record.stop();

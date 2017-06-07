@@ -2,13 +2,16 @@ APP.ExecuteCmd = (function(ref){
 
     var _ref = ref;
 
-    this.execute = function(resolve, powerFullProcess, words){
+    this.execute = function(resolve, powerFullProcess, words, lastServiceLaunch, sound){
         APP.services.DevicesService.execute(powerFullProcess.cmd).then(function(){
 
             if(powerFullProcess.cmd.indexOf('mocp')){
-                _ref.lastServiceLaunch = 'vlc';
+                _ref.lastServiceLaunch = 'MusicModule';
             }
-            APP.services.SoundEmotionService.playSound('talk');
+            if(sound){
+                APP.services.SoundEmotionService.playSound('talk');
+            }
+
             if(powerFullProcess.successAnswer){
                 //_ref.talkController.speech(powerFullProcess.successAnswer);
             }

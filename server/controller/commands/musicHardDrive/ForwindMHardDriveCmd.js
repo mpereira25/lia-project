@@ -1,9 +1,9 @@
-APP.StandbySnowboyCmd = (function(ref){
+APP.ForwindMHardDriveCmd = (function(ref){
 
     var _ref = ref;
 
     this.execute = function(resolve){
-        APP.services.SnowboyService.start();
+        APP.services.MusicService.forwind();
         resolve();
     }
 

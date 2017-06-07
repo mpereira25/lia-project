@@ -8,9 +8,16 @@ APP.SoundcloudService = function(){
     var _ref = this;
 
     this.init = function(){
-        SC.initialize({
-          client_id: CONFIG_LIA.SOUNDCLOUD_KEY
+
+        $.getJSON("datas/config.json", function(json) {
+            console.log(json); // this will show the info it in firebug console
+
+            SC.initialize({
+              client_id: json.soundcloudModule.key
+            });
         });
+
+
     }
 
     this.search = function(searchValue){

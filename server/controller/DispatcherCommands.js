@@ -15,9 +15,9 @@ APP.DispatcherCommands = function(){
 
                 if(!powerFullProcess.module ||
                     (powerFullProcess.module && APP.modules[powerFullProcess.module])) {
-                    CommandClass = powerFullProcess.commandClasses[0];
+                    CommandClass = APP[powerFullProcess.commandClasses[0]];
                     command = new CommandClass(_ref);
-                    command.execute(resolve, powerFullProcess, words, lastServiceLaunch);
+                    command.execute(resolve, powerFullProcess, words, lastServiceLaunch, true);
                 }else{
                     console.log("----------");
                     console.log("ERROR module " + powerFullProcess.module + ' not exist');
@@ -25,7 +25,7 @@ APP.DispatcherCommands = function(){
                     resolve();
                 }
             }else if(powerFullProcess.dependanciesCommandClasses && powerFullProcess.dependanciesCommandClasses[_ref.lastServiceLaunch]) {
-                CommandClass = powerFullProcess.dependanciesCommandClasses[_ref.lastServiceLaunch];
+                CommandClass = APP[powerFullProcess.dependanciesCommandClasses[_ref.lastServiceLaunch]];
                 command = new CommandClass(_ref);
                 command.execute(resolve, powerFullProcess, words, lastServiceLaunch);
             }else{

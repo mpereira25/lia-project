@@ -23,7 +23,8 @@ APP.SocketController = function(){
         socket.emit('lia_action', type + "::" + data);
     };
     this.connect = function(){
-        socket = io.connect(CONFIG_LIA && CONFIG_LIA.SERVER ? 'https://' + CONFIG_LIA.SERVER.IP + ':' + CONFIG_LIA.SERVER.PORT : 'https://192.168.0.18:9000');
+        var serverUrl = 'https://' + window.location.hostname + ':9000';
+        socket = io.connect(serverUrl);
 
         socket.on('talk', function (message) {
             if(message){

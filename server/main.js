@@ -3,6 +3,8 @@ var https = require('https');
 var fs = require('fs');
 
 var homepageServer = null;
+var commandsServer = null;
+var keyAuth = 'te8efghtju884e7d4e5g4gr6468at4gr8h48k8gr48';
 
 APP.initServer = function(){
 
@@ -20,74 +22,94 @@ APP.initServer = function(){
         key: fs.readFileSync('server/cert/key.pem'),
         cert: fs.readFileSync('server/cert/cert.pem')
     };
-    // homepage Middleware
+    //  Middleware
+    commandsServer = https.createServer(credentials, function(req, res) {
+        if(req.url.indexOf('?enterHome=') != -1){
+            var param = req.url.split('?enterHome=')[1];
+            var command = new APP.EnterHomeCmd(this);
+            command.execute(function(){}, param);
+        }else if(req.url.indexOf('?leaveHome=') != -1){
+            var param = req.url.split('?leaveHome=')[1];
+            var command = new APP.LeaveHomeCmd(this);
+            command.execute(function(){}, param);
+        }else if(req.url.indexOf('key=') !== -1 &&
+                    req.url.indexOf('idcmd=') !== -1){
+
+            var params = req.url.split('?')[1];
+            var paramsTab = params.split('&');
+            var nb = paramsTab.length;
+            var paramsObj = {};
+            var paramPair;
+            var i;
+            for(i = 0; i < nb ; i++){
+                paramPair = paramsTab[i].split('=');
+                paramsObj[paramPair[0]] = paramPair[1];
+            }
+
+            if(paramsObj.key === keyAuth){
+                var idCmd = paramsObj.idcmd;
+                var words = [];
+                if(paramsObj.words){
+                    words = paramsObj.words.split(',');
+                }
+                console.log("CMD to exec :");
+                console.log(paramsObj);
+
+                // search command with id = idCmd in CommandsModel
+                nb = APP.models.CommandsModel.LISTENING_WORDS_ACTION.length;
+                var cmd = null;
+                for (i = 0; i < nb; i++) {
+                    if(APP.models.CommandsModel.LISTENING_WORDS_ACTION[i].id === idCmd){
+                        console.log("CMD found !");
+                        cmd = APP.models.CommandsModel.LISTENING_WORDS_ACTION[i];
+                        switch(cmd.type){
+                            case 'execute':
+                                APP.services.DispatcherCommands.run(words, cmd, APP.lastServiceLaunch).then(function(){
+                                    APP.lastServiceLaunch = APP.services.DispatcherCommands.lastServiceLaunch;
+                                    console.log('lastServiceLaunch : ' + lastServiceLaunch);
+                                }).catch(function(){
+
+                                });
+                                break;
+                        }
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write('');
+        res.end();
+    });
+
+    //  Middleware
     homepageServer = https.createServer(credentials, function(req, res) {
 
         req.addListener( 'end', function () {
-            filesServer.serve( req, res );
+            filesServer.serve( req, res, function (e, result) {
+                if (e) { // There was an error serving the file
+                    if(req.url.indexOf("config.json") !== -1) {
+                        filesServer.serveFile('../datas/config.json', 200, {}, req, res);
+                    }else{
+                        // Respond to the client
+                        res.writeHead(e.status, e.headers);
+                        res.end();
+                    }
+                }
+            });
         } ).resume();
-        return;
 
-        if(req.url.indexOf('.html') != -1){
-            fs.readFile('client/view/' + req.url, function (err, data) {
-                if (err) console.log(err);
-                res.writeHead(200, {'Content-Type': 'text/html'});
-                res.write(data);
-                res.end();
-            });
-        }
-        else if(req.url.indexOf('client/view/css/index.css') != -1){
-            fs.readFile('client/view/css/index.css', function (err, data) {
-                if (err) console.log(err);
-                res.writeHead(200, {'Content-Type': 'text/css'});
-                res.write(data);
-                res.end();
-            });
-        }
-        else if(req.url.indexOf('client.js') != -1){
-            fs.readFile('build/client.js', function (err, data) {
-                if (err) console.log(err);
-                res.writeHead(200, {'Content-Type': 'text/javascript'});
-                res.write(data);
-                res.end();
-            });
-        }else if(req.url.indexOf('jquery.min.js') != -1){
-            fs.readFile('bower_components/jquery/dist/jquery.min.js', function (err, data) {
-                if (err) console.log(err);
-                res.writeHead(200, {'Content-Type': 'text/javascript'});
-                res.write(data);
-                res.end();
-            });
-        }else if(req.url.indexOf('jquery-ui.min.js') != -1){
-            fs.readFile('bower_components/jquery-ui/jquery-ui.min.js', function (err, data) {
-                if (err) console.log(err);
-                res.writeHead(200, {'Content-Type': 'text/javascript'});
-                res.write(data);
-                res.end();
-            });
-        }else if(req.url.indexOf('annyang.js') != -1){
-            fs.readFile('bower_components/annyang/annyang.js', function (err, data) {
-                if (err) console.log(err);
-                res.writeHead(200, {'Content-Type': 'text/javascript'});
-                res.write(data);
-                res.end();
-            });
-        }else if(req.url.indexOf('.png') != -1){
-            fs.readFile('client/assets/' + req.url.split('assets/')[1], function (err, data) {
-                if (err) console.log(err);
-                res.writeHead(200, {'Content-Type': 'image'});
-                res.write(data);
-                res.end();
-            });
-        }else{
-
-        }
     });
 
     homepageServer.listen(9000, function () {
         console.log('homepage server started');
     });
 
+    commandsServer.listen(9001, function () {
+        console.log('commandsServer started');
+    });
 
 };
 
@@ -96,6 +118,12 @@ APP.initModules = function(){
     APP.services = {};
     APP.models = {};
     APP.modules = {};
+
+    APP.configJSON = JSON.parse(fs.readFileSync('datas/config.json', 'utf8'));
+    APP.commandsJSON = JSON.parse(fs.readFileSync('datas/commands.json', 'utf8'));
+
+    //console.log(APP.configJSON);
+
 
     // init modules
     APP.modules.BaseModule = new APP.BaseModule();

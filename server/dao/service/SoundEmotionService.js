@@ -58,6 +58,8 @@ APP.SoundEmotionService = (function(){
     this.playSound = function(id){
         if(!_isInit) _ref.init();
 
+        if(!APP.configJSON.soundBB8) return;
+
         var url = _dict[id][Math.round(Math.random() * (_dict[id].length-1))];
 
         var sound = new Sound(url);
