@@ -123,4 +123,35 @@ APP.talk = function(value){
 };
 
 APP.init();
-APP.start();
+
+var paramsObj = getParamFromUrl(document.location.href);
+
+$.getJSON("datas/config.json?key=" + paramsObj.key, function(json) {
+  APP.configJson = json;
+  console.log(APP.configJson); // this will show the info it in firebug console
+  APP.start();
+});
+
+function getParamFromUrl(url) {
+  var paramsObj = {};
+
+  if(!url) {
+    return {};
+  }
+
+  var params = url.split('?');
+  if(params.length > 1) {
+    var paramsTab = params[1].split('&');
+    var nb = paramsTab.length;
+    var paramsObj = {};
+    var paramPair;
+    var i;
+    for(i = 0; i < nb ; i++){
+        paramPair = paramsTab[i].split('=');
+        paramsObj[paramPair[0]] = paramPair[1];
+    }
+  }
+
+
+  return paramsObj;
+}

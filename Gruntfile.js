@@ -33,8 +33,10 @@ module.exports = function (grunt) {
         },
         copy:{
             html:{
-                src: ['client/index.html'],
-                dest: 'dist/index.html'
+                expand: true,
+                cwd: 'client/',
+                dest: 'dist/',
+                src: ['*.html']
             },
             js:{
                 expand: true,

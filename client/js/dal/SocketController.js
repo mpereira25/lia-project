@@ -23,7 +23,7 @@ APP.SocketController = function(){
         socket.emit('lia_action', type + "::" + data);
     };
     this.connect = function(){
-        var serverUrl = 'https://' + window.location.hostname + ':9000';
+        var serverUrl = 'https://' + window.location.hostname + ':' + APP.configJson.hosts.socket.port;
         socket = io.connect(serverUrl);
 
         socket.on('talk', function (message) {

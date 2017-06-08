@@ -3833,9 +3833,12 @@ var Server = require( 'node-static' ).Server;
 var https = require('https');
 var fs = require('fs');
 
-var homepageServer = null;
-var commandsServer = null;
-var keyAuth = 'te8efghtju884e7d4e5g4gr6468at4gr8h48k8gr48';
+var socketServer = null;
+var clientServer = null;
+
+APP.configJSON = JSON.parse(fs.readFileSync('datas/config.json', 'utf8'));
+APP.commandsJSON = JSON.parse(fs.readFileSync('datas/commands.json', 'utf8'));
+var keyAuth = APP.configJSON.auth.secret;
 
 APP.initServer = function(){
 
@@ -3854,30 +3857,34 @@ APP.initServer = function(){
         cert: fs.readFileSync('server/cert/cert.pem')
     };
     //  Middleware
-    commandsServer = https.createServer(credentials, function(req, res) {
-        if(req.url.indexOf('?enterHome=') != -1){
-            var param = req.url.split('?enterHome=')[1];
-            var command = new APP.EnterHomeCmd(this);
-            command.execute(function(){}, param);
-        }else if(req.url.indexOf('?leaveHome=') != -1){
-            var param = req.url.split('?leaveHome=')[1];
-            var command = new APP.LeaveHomeCmd(this);
-            command.execute(function(){}, param);
-        }else if(req.url.indexOf('key=') !== -1 &&
-                    req.url.indexOf('idcmd=') !== -1){
+    clientServer = https.createServer(credentials, function(req, res) {
 
-            var params = req.url.split('?')[1];
-            var paramsTab = params.split('&');
-            var nb = paramsTab.length;
-            var paramsObj = {};
-            var paramPair;
-            var i;
-            for(i = 0; i < nb ; i++){
-                paramPair = paramsTab[i].split('=');
-                paramsObj[paramPair[0]] = paramPair[1];
-            }
+        var command = null;
+        var paramsObj = getParamFromUrl(req.url);
 
-            if(paramsObj.key === keyAuth){
+        console.log('clientServer get url ' + req.url);
+
+        if(paramsObj.enterHome) {
+
+            command = new APP.EnterHomeCmd(this);
+            command.execute(function(){}, paramsObj.enterHome);
+
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.write('');
+            res.end();
+
+        }else if(paramsObj.leaveHome) {
+
+            command = new APP.LeaveHomeCmd(this);
+            command.execute(function(){}, paramsObj.leaveHome);
+
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.write('');
+            res.end();
+
+        }else if(paramsObj.key && paramsObj.key === keyAuth) {
+
+            if(paramsObj.idcmd) {
                 var idCmd = paramsObj.idcmd;
                 var words = [];
                 if(paramsObj.words){
@@ -3888,14 +3895,13 @@ APP.initServer = function(){
 
                 // search command with id = idCmd in CommandsModel
                 nb = APP.models.CommandsModel.LISTENING_WORDS_ACTION.length;
-                var cmd = null;
                 for (i = 0; i < nb; i++) {
                     if(APP.models.CommandsModel.LISTENING_WORDS_ACTION[i].id === idCmd){
                         console.log("CMD found !");
-                        cmd = APP.models.CommandsModel.LISTENING_WORDS_ACTION[i];
-                        switch(cmd.type){
+                        command = APP.models.CommandsModel.LISTENING_WORDS_ACTION[i];
+                        switch(command.type){
                             case 'execute':
-                                APP.services.DispatcherCommands.run(words, cmd, APP.lastServiceLaunch).then(function(){
+                                APP.services.DispatcherCommands.run(words, command, APP.lastServiceLaunch).then(function(){
                                     APP.lastServiceLaunch = APP.services.DispatcherCommands.lastServiceLaunch;
                                     console.log('lastServiceLaunch : ' + lastServiceLaunch);
                                 }).catch(function(){
@@ -3906,52 +3912,85 @@ APP.initServer = function(){
                         break;
                     }
                 }
-            }
+                res.writeHead(200, {'Content-Type': 'text/html'});
+                res.write('');
+                res.end();
 
+            }else if(req.url.indexOf("config.json") !== -1) {
+
+                filesServer.serveFile('../datas/config.json', 200, {}, req, res);
+
+            }else {
+
+                filesServer.serveFile('../dist/index.html', 200, {}, req, res);
+
+            }
+        }else if(req.url.indexOf("index.html") === -1 && req.url.substr(0, 2).indexOf("/?") === -1 && req.url !== '/') {
+            req.addListener( 'end', function () {
+                filesServer.serve( req, res, function (e, result) {
+                    if (e) { // There was an error serving the file
+                        displayErrorPage(filesServer, req, res);
+                    }
+                });
+            } ).resume();
+        }else {
+            displayErrorPage(filesServer, req, res);
         }
+
+    });
+
+    //  Middleware
+    socketServer = https.createServer(credentials, function(req, res) {
 
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.write('');
         res.end();
-    });
-
-    //  Middleware
-    homepageServer = https.createServer(credentials, function(req, res) {
-
-        req.addListener( 'end', function () {
-            filesServer.serve( req, res, function (e, result) {
-                if (e) { // There was an error serving the file
-                    if(req.url.indexOf("config.json") !== -1) {
-                        filesServer.serveFile('../datas/config.json', 200, {}, req, res);
-                    }else{
-                        // Respond to the client
-                        res.writeHead(e.status, e.headers);
-                        res.end();
-                    }
-                }
-            });
-        } ).resume();
 
     });
 
-    homepageServer.listen(9000, function () {
-        console.log('homepage server started');
+    socketServer.listen(9000, function () {
+        console.log('socketServer on port 9000 started');
     });
 
-    commandsServer.listen(9001, function () {
-        console.log('commandsServer started');
+    clientServer.listen(9001, function () {
+        console.log('clientServer on port 9001 started');
     });
 
 };
+
+function displayErrorPage(filesServer, req, res) {
+    filesServer.serveFile('../dist/404.html', 404, {}, req, res);
+}
+
+function getParamFromUrl(url) {
+  var paramsObj = {};
+
+  if(!url) {
+    return {};
+  }
+
+  var params = url.split('?');
+  if(params.length > 1) {
+    var paramsTab = params[1].split('&');
+    var nb = paramsTab.length;
+    var paramsObj = {};
+    var paramPair;
+    var i;
+    for(i = 0; i < nb ; i++){
+        paramPair = paramsTab[i].split('=');
+        paramsObj[paramPair[0]] = paramPair[1];
+    }
+  }
+
+
+  return paramsObj;
+}
 
 APP.initModules = function(){
     // domains
     APP.services = {};
     APP.models = {};
     APP.modules = {};
-
-    APP.configJSON = JSON.parse(fs.readFileSync('datas/config.json', 'utf8'));
-    APP.commandsJSON = JSON.parse(fs.readFileSync('datas/commands.json', 'utf8'));
 
     //console.log(APP.configJSON);
 
@@ -3965,7 +4004,7 @@ APP.initModules = function(){
     APP.modules.SearchModule = new APP.SearchModule();
     APP.modules.SoundcloudModule = new APP.SoundcloudModule();
 
-    APP.modules.BaseModule.init(homepageServer);
+    APP.modules.BaseModule.init(socketServer);
     APP.modules.RobotModule.init();
     APP.modules.MusicModule.init();
     APP.modules.TemperatureModule.init();
