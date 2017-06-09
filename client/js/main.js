@@ -126,7 +126,7 @@ APP.init();
 
 var paramsObj = getParamFromUrl(document.location.href);
 
-$.getJSON("datas/config.json?key=" + paramsObj.key, function(json) {
+$.getJSON("datas/config.json", function(json) {
   APP.configJson = json;
   console.log(APP.configJson); // this will show the info it in firebug console
   APP.start();

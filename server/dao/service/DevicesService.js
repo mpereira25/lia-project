@@ -55,7 +55,7 @@ APP.DevicesService = (function(){
         }
 
         //linux
-        var linuxCmd = 'chromium-browser "https://' + addresses[0] + ':9000"';
+        var linuxCmd = 'chromium-browser "https://' + addresses[0] + ':' + APP.configJSON.hosts.socket.port + '"';
 
         var exec = require('child_process').exec;
         var child = exec(linuxCmd);

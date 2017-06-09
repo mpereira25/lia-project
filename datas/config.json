@@ -4,7 +4,12 @@
     },
     "hosts": {
       "cameraStream": {
-        "port": 1068
+        "port": 9002,
+        "login": "think",
+        "pass": "0iabvms8"
+      },
+      "client": {
+        "port": 9001
       },
       "socket": {
         "port": 9000

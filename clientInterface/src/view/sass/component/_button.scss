@@ -1,0 +1,78 @@
+.btn{
+	padding: 7px;
+	text-decoration: none;
+	color: #ffffff;
+    cursor: pointer;
+    vertical-align: top;
+
+	a {
+		color: #ffffff;
+	}
+}
+
+.btn-primary{
+    font-size: 1.4rem;
+	height : 40px;
+    background-color: $bg-color-dark;
+	min-width : 60px;
+	border : none;
+	color: #ffffff;
+	font-weight: normal;
+	@extend .shadow;
+	@include vendor-prefix(transition, all 0.2s ease-out);
+
+	&:hover, &_selected{
+		height : 40px;
+    	background-color: #ffffff;
+		color: #333333;
+	}
+}
+
+.buttonPlay{
+	width: 70px;
+	height: 70px;
+	display: inline-block;
+	line-height: 70px;
+	vertical-align: middle;
+	text-align: center;
+    background-color: #ffffff;
+	border-radius: 150px;
+    z-index : 20;
+    cursor: pointer;
+    @include vendor-prefix(user-select, none);
+
+    div{
+        position: relative !important;
+		display: inline-block;
+		padding: 0;
+		margin: 0;
+		color: #000000;
+		font-size: 1.5rem;
+	}
+
+}
+
+/*------------------------------*/
+/* BUTTON CLOSE */
+/*------------------------------*/
+.btnClose{
+  position: absolute;
+  display: block;
+  width: 30px;
+  height: 30px;
+  background-color: transparent;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+
+  &:after{
+    content: 'X';
+    color: #ffffff;
+    font-size: 2.5rem;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}

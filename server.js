@@ -233,7 +233,7 @@ APP.DevicesService = (function(){
         }
 
         //linux
-        var linuxCmd = 'chromium-browser "https://' + addresses[0] + ':9000"';
+        var linuxCmd = 'chromium-browser "https://' + addresses[0] + ':' + APP.configJSON.hosts.socket.port + '"';
 
         var exec = require('child_process').exec;
         var child = exec(linuxCmd);
@@ -3847,7 +3847,12 @@ APP.initServer = function(){
     // ---------------
     // modules
 
-    var filesServer = new Server( 'dist/', {
+    var filesRobotServer = new Server( 'dist/', {
+        cache: false,
+        gzip: true
+    } );
+
+    var filesInterfaceServer = new Server( 'clientInterface/dist/', {
         cache: false,
         gzip: true
     } );
@@ -3861,7 +3866,10 @@ APP.initServer = function(){
 
         var command = null;
         var paramsObj = getParamFromUrl(req.url);
+        var isLocal = req.headers.host.indexOf('192.168') === 0;
+        var secretValid = paramsObj.key && paramsObj.key === keyAuth;
 
+        console.log('isLocal ' + isLocal);
         console.log('clientServer get url ' + req.url);
 
         if(paramsObj.enterHome) {
@@ -3882,7 +3890,7 @@ APP.initServer = function(){
             res.write('');
             res.end();
 
-        }else if(paramsObj.key && paramsObj.key === keyAuth) {
+        }else if(paramsObj.key && (isLocal || secretValid)) {
 
             if(paramsObj.idcmd) {
                 var idCmd = paramsObj.idcmd;
@@ -3918,23 +3926,27 @@ APP.initServer = function(){
 
             }else if(req.url.indexOf("config.json") !== -1) {
 
-                filesServer.serveFile('../datas/config.json', 200, {}, req, res);
+                filesInterfaceServer.serveFile('../../datas/config.json', 200, {}, req, res);
+
+            }else if(req.url.indexOf("commands.json") !== -1) {
+
+                filesInterfaceServer.serveFile('../../datas/commands.json', 200, {}, req, res);
 
             }else {
 
-                filesServer.serveFile('../dist/index.html', 200, {}, req, res);
+                filesInterfaceServer.serveFile('index.html', 200, {}, req, res);
 
             }
         }else if(req.url.indexOf("index.html") === -1 && req.url.substr(0, 2).indexOf("/?") === -1 && req.url !== '/') {
             req.addListener( 'end', function () {
-                filesServer.serve( req, res, function (e, result) {
+                filesInterfaceServer.serve( req, res, function (e, result) {
                     if (e) { // There was an error serving the file
-                        displayErrorPage(filesServer, req, res);
+                        displayErrorPage(filesRobotServer, req, res);
                     }
                 });
             } ).resume();
         }else {
-            displayErrorPage(filesServer, req, res);
+            displayErrorPage(filesRobotServer, req, res);
         }
 
     });
@@ -3942,9 +3954,18 @@ APP.initServer = function(){
     //  Middleware
     socketServer = https.createServer(credentials, function(req, res) {
 
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write('');
-        res.end();
+        req.addListener( 'end', function () {
+            filesRobotServer.serve( req, res, function (e, result) {
+                if (e) { // There was an error serving the file
+
+                    if(req.url.indexOf("config.json") !== -1) {
+                        filesRobotServer.serveFile('../datas/config.json', 200, {}, req, res);
+                    }else {
+                        displayErrorPage(filesRobotServer, req, res);
+                    }
+                }
+            });
+        } ).resume();
 
     });
 
@@ -3978,7 +3999,7 @@ function getParamFromUrl(url) {
     var i;
     for(i = 0; i < nb ; i++){
         paramPair = paramsTab[i].split('=');
-        paramsObj[paramPair[0]] = paramPair[1];
+        paramsObj[decodeURI(paramPair[0])] = decodeURI(paramPair[1]);
     }
   }
 

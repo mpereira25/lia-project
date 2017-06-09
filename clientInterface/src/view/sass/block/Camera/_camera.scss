@@ -1,0 +1,30 @@
+.camera {
+    display: block;
+    position: relative;
+    margin: 20px 0;
+    width: 100%;
+    text-align: left;
+
+    &__ctBtn {
+        padding: 0 0 0 20px;
+    }
+
+    &__ctImage {
+        width: 100%;
+        text-align: center;
+        min-height: 500px;
+        margin: 50px 0;
+    }
+
+    &__image {
+        width: 100%;
+        max-width: 600px;
+    }
+
+    .btn {
+        display: inline-block;
+        margin-right: 15px;
+    }
+
+
+}

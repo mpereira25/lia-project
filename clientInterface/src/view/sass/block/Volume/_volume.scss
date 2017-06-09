@@ -1,0 +1,15 @@
+.volume {
+    display: block;
+    position: relative;
+    margin: 30px 0 15px;
+    width: 100%;
+    text-align: left;
+
+    &__ctBtn {
+        padding: 0 0 0 20px;
+    }
+
+    .btn {
+        margin-right: 15px;
+    }
+}

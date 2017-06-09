@@ -1,0 +1,57 @@
+
+*{
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html {
+    overflow: -moz-scrollbars-vertical;
+    overflow-y: scroll;
+    min-height: 101%;
+}
+
+html, body{
+    font-size: 10px;
+    position: relative;
+	background-color: $bg-color;
+	//background-color: #ecd7d4;
+    //background-image: url(../../images/2d93416fab83d5a24deed8c042b12dde.jpg);
+	background-repeat: no-repeat;
+    @include vendor-prefix(background-size, cover);
+	display: table;
+	width: 100%;
+	height: 100%;
+	margin : 0;
+	color: $text-color;
+	padding : 0;
+	font-family: $font-text, Helvetica, Arial;
+}
+
+p, label{
+  font-size: 1.4rem;
+}
+
+a {
+    color: $title-color;
+}
+
+.title {
+    font-size: 1.5rem;
+    text-align: left;
+    font-weight: normal;
+    padding: 15px 10px;
+    color: $title-color;
+}
+
+.subtitle {
+    font-size: 1.3rem;
+    text-align: left;
+    font-weight: normal;
+    padding: 5px 20px;
+    color: $text-color;
+}
+
+.shadow{
+	box-shadow: 1px 3px 8px 0px rgba(0, 0, 0, 0.1);
+}
