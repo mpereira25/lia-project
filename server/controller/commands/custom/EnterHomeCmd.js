@@ -59,7 +59,9 @@ APP.EnterHomeCmd = (function(ref){
                 }
             };})(i, nb, words), 600);
         }
-        func(0, nb, words);
+        if(cmds.length > 0){
+            func(0, nb, words);
+        }
     }
 
 

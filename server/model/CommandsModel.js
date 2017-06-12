@@ -5,6 +5,20 @@ APP.CommandsModel = function(){
 
     this.LISTENING_WORDS_ACTION = [];
 
+    this.getCmdFromId = function(idCmd){
+        var nb = _ref.LISTENING_WORDS_ACTION.length;
+        var i;
+        var command;
+        for (i = 0; i < nb; i++) {
+            if(_ref.LISTENING_WORDS_ACTION[i].id === idCmd){
+                command = _ref.LISTENING_WORDS_ACTION[i];
+                break;
+            }
+        }
+
+        return command;
+    }
+
     return this;
 
 };

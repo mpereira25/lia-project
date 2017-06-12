@@ -31,7 +31,7 @@ APP.LeaveHomeCmd = (function(ref){
             if((lights && (currentProcess.id === 'light_off_entrée' ||
                 currentProcess.id === 'light_off_saloon' ||
                 currentProcess.id === 'light_off_bureau')) ||
-                currentProcess.id === 'son_off_télé'
+                currentProcess.id === 'custom_off_télé'
             ) {
                 cmds.push(currentProcess);
             }
@@ -49,7 +49,10 @@ APP.LeaveHomeCmd = (function(ref){
                 }
             };})(i, nb, words), 600);
         }
-        func(0, nb, words);
+        if(cmds.length > 0){
+            func(0, nb, words);
+        }
+
     }
 
     return this;

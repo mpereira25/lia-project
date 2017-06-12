@@ -38,11 +38,12 @@ APP.TemperatureService = (function(){
             child.on('close', function(code) {
                 console.log('closing code: ' + code);
                 var tab = str.split('::');
-
-                resolve({
+                var data = {
                     ext: Math.round(parseFloat(tab[1])),
                     int: Math.round(parseFloat(tab[3]))
-                })
+                };
+                EventBus.dispatch(_ref.ON_CHECK_TEMPERATURE, _ref, data);
+                resolve(data);
             });
 
         });
@@ -56,12 +57,15 @@ APP.TemperatureService = (function(){
 
             if(_countInterval >= _timeCheckTemperature){
                 _ref.getTemperature().then(function(data){
-                    EventBus.dispatch(_ref.ON_CHECK_TEMPERATURE, _ref, data);
+
                 });
                 _countInterval = 0;
             }
-
         }, 60000);
+
+        _ref.getTemperature().then(function(data){
+
+        });
     };
 
     this.stopCheckTemperature = function(){

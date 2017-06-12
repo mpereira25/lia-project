@@ -2,6 +2,7 @@ import http from 'http';
 import { Dispatcher } from 'flux';
 import DatasEvent from '../evt/DatasEvent.js';
 import MainModel from '../MainModel.js';
+import HomeService from '../services/HomeService';
 
 class MainModelController {
 
@@ -18,6 +19,13 @@ class MainModelController {
 
         http.get('/datas/config.json?key=' + this.model.secret, (response) => {
             // Continuously update stream with data
+            if(response.statusCode === 404) {
+                this.dispatcher.dispatch(DatasEvent.CONFIG_COMPLETE);
+                if(callback) {
+                    callback();
+                }
+                return;
+            }
             var body = '';
             response.on('data', (d) => {
                 body += d;
@@ -33,48 +41,102 @@ class MainModelController {
                     });
                     response.on('end', () => {
                         this.model.commandsJson = JSON.parse(body);
-                        this.dispatcher.dispatch(DatasEvent.CONFIG_COMPLETE);
-                        if(callback) {
-                            callback();
-                        }
+                        this.parseLightsAndCustomCmds();
+
+                        const homeService = new HomeService();
+                        homeService.getTemperatures(false).then((result) => {
+                            this.model.temperatureInt = result.int;
+                            this.model.temperatureExt = result.ext;
+                            this.dispatcher.dispatch(DatasEvent.CONFIG_COMPLETE);
+                            if(callback) {
+                                callback();
+                            }
+                        }).catch(() => {
+                            this.dispatcher.dispatch(DatasEvent.CONFIG_COMPLETE);
+                            if(callback) {
+                                callback();
+                            }
+                        });
                     });
                 });
             });
 
         });
     }
-    getLightsCmds () {
+
+    parseLightsAndCustomCmds () {
         const lightsObj = {};
+        const customOnOffObj = {};
+        const listCustom = [];
 
         const nb = this.model.commandsJson.length;
         let i;
-        let idLight;
+        let id;
         for( i = 0; i < nb; i++) {
             if(this.model.commandsJson[i].id.indexOf('light_on_') !== -1) {
 
-                idLight = this.model.commandsJson[i].id.split('light_on_')[1];
-                if(!lightsObj[idLight]) lightsObj[idLight] = {};
-                lightsObj[idLight].on = this.model.commandsJson[i];
+                id = this.model.commandsJson[i].id.split('light_on_')[1];
+                if(!lightsObj[id]) lightsObj[id] = {};
+                lightsObj[id].on = this.model.commandsJson[i];
 
             }else if(this.model.commandsJson[i].id.indexOf('light_off_') !== -1) {
 
-                idLight = this.model.commandsJson[i].id.split('light_off_')[1];
-                if(!lightsObj[idLight]) lightsObj[idLight] = {};
-                lightsObj[idLight].off = this.model.commandsJson[i];
+                id = this.model.commandsJson[i].id.split('light_off_')[1];
+                if(!lightsObj[id]) lightsObj[id] = {};
+                lightsObj[id].off = this.model.commandsJson[i];
+
+            }else if(this.model.commandsJson[i].id.indexOf('custom_on_') !== -1) {
+
+                id = this.model.commandsJson[i].id.split('custom_on_')[1];
+                if(!customOnOffObj[id]) customOnOffObj[id] = {};
+                customOnOffObj[id].on = this.model.commandsJson[i];
+
+            }else if(this.model.commandsJson[i].id.indexOf('custom_off_') !== -1) {
+
+                id = this.model.commandsJson[i].id.split('custom_off_')[1];
+                if(!customOnOffObj[id]) customOnOffObj[id] = {};
+                customOnOffObj[id].off = this.model.commandsJson[i];
+
+            }else if(this.model.commandsJson[i].id.indexOf('custom_') !== -1) {
+
+                listCustom.push(this.model.commandsJson[i]);
             }
         }
 
-        const list = [];
+        const listLights = [];
+        const listOnOffCustom = [];
         for(let p in lightsObj) {
-            list.push({
+            listLights.push({
                 name: p,
                 on: lightsObj[p].on,
                 off: lightsObj[p].off
             });
         }
-        return list;
+        for(let p in customOnOffObj) {
+            listOnOffCustom.push({
+                name: p,
+                on: customOnOffObj[p].on,
+                off: customOnOffObj[p].off
+            });
+        }
 
+        this.model.lightCmds = listLights;
+        this.model.customOnOffCmds = listOnOffCustom;
+        this.model.customCmds = listCustom;
     }
+
+    getTemperatures () {
+        const homeService = new HomeService();
+        return homeService.getTemperatures(true).then((result) => {
+            this.model.temperatureInt = result.int;
+            this.model.temperatureExt = result.ext;
+
+            return result;
+        }).catch(() => {
+
+        });
+    }
+
     getParamFromUrl(url) {
       var paramsObj = {};
 

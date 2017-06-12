@@ -35,6 +35,48 @@ APP.SOCKET_MESSAGE = (function(){
 
     return this;
 })();
+var RSVP = require('rsvp');
+var EventBus = require('eventbusjs');
+
+APP.HTTPServerController = (function(){
+
+    var _ref = this;
+
+    this.addEventListener = function(type, callback, scope) {
+        EventBus.addEventListener(type, callback, scope);
+    }
+    this.removeEventListener = function(type, callback, scope) {
+        EventBus.removeEventListener(type, callback, scope);
+    }
+
+    this.getTemperatures = function(res, params) {
+        return new RSVP.Promise(function(resolve, reject){
+
+            if(params.refresh === 'true') {
+                APP.services.TemperatureService.getTemperature().then(function(result){
+                    res.writeHead(200, {'Content-Type': 'application/json'});
+                    res.write(JSON.stringify(APP.modules.TemperatureModule.lastTemperature));
+                    res.end();
+
+                    resolve();
+                }).catch(function(){
+                    resolve();
+                });
+            }else{
+                res.writeHead(200, {'Content-Type': 'application/json'});
+                res.write(JSON.stringify(APP.modules.TemperatureModule.lastTemperature));
+                res.end();
+
+                resolve();
+            }
+
+        });
+    }
+
+    return this;
+
+
+})();
 var EventBus = require('eventbusjs');
 
 APP.SocketController = function(server){
@@ -1938,11 +1980,12 @@ APP.TemperatureService = (function(){
             child.on('close', function(code) {
                 console.log('closing code: ' + code);
                 var tab = str.split('::');
-
-                resolve({
+                var data = {
                     ext: Math.round(parseFloat(tab[1])),
                     int: Math.round(parseFloat(tab[3]))
-                })
+                };
+                EventBus.dispatch(_ref.ON_CHECK_TEMPERATURE, _ref, data);
+                resolve(data);
             });
 
         });
@@ -1956,12 +1999,15 @@ APP.TemperatureService = (function(){
 
             if(_countInterval >= _timeCheckTemperature){
                 _ref.getTemperature().then(function(data){
-                    EventBus.dispatch(_ref.ON_CHECK_TEMPERATURE, _ref, data);
+
                 });
                 _countInterval = 0;
             }
-
         }, 60000);
+
+        _ref.getTemperature().then(function(data){
+
+        });
     };
 
     this.stopCheckTemperature = function(){
@@ -2215,6 +2261,20 @@ APP.CommandsModel = function(){
 
     this.LISTENING_WORDS_ACTION = [];
 
+    this.getCmdFromId = function(idCmd){
+        var nb = _ref.LISTENING_WORDS_ACTION.length;
+        var i;
+        var command;
+        for (i = 0; i < nb; i++) {
+            if(_ref.LISTENING_WORDS_ACTION[i].id === idCmd){
+                command = _ref.LISTENING_WORDS_ACTION[i];
+                break;
+            }
+        }
+
+        return command;
+    }
+
     return this;
 
 };
@@ -2357,11 +2417,33 @@ APP.DispatcherCommands = function(){
                 CommandClass = APP[powerFullProcess.dependanciesCommandClasses[_ref.lastServiceLaunch]];
                 command = new CommandClass(_ref);
                 command.execute(resolve, powerFullProcess, words, lastServiceLaunch);
+
+            }else if(powerFullProcess.commandIds && powerFullProcess.commandIds.length > 0) {
+                console.log(powerFullProcess.commandIds);
+                _ref._runNextIdCmd(resolve, words, 0, powerFullProcess, lastServiceLaunch);
             }else{
                 resolve();
             }
 
         });
+    };
+
+    this._runNextIdCmd = function(resolve, words, indexCmd, powerFullProcess, lastServiceLaunch){
+
+        if(indexCmd < powerFullProcess.commandIds.length) {
+            var processCmd = APP.models.CommandsModel.getCmdFromId(powerFullProcess.commandIds[indexCmd]);
+            if(processCmd) {
+                (new APP.DispatcherCommands()).run(words, processCmd, lastServiceLaunch).then(function(){
+                    setTimeout(function(){
+                        _ref._runNextIdCmd(resolve, words, indexCmd+1, powerFullProcess, lastServiceLaunch)
+                    }, 600);
+                });
+            }else{
+                resolve();
+            }
+        }else{
+            resolve();
+        }
     };
 
     return this;
@@ -2653,7 +2735,9 @@ APP.EnterHomeCmd = (function(ref){
                 }
             };})(i, nb, words), 600);
         }
-        func(0, nb, words);
+        if(cmds.length > 0){
+            func(0, nb, words);
+        }
     }
 
 
@@ -2693,7 +2777,7 @@ APP.LeaveHomeCmd = (function(ref){
             if((lights && (currentProcess.id === 'light_off_entrée' ||
                 currentProcess.id === 'light_off_saloon' ||
                 currentProcess.id === 'light_off_bureau')) ||
-                currentProcess.id === 'son_off_télé'
+                currentProcess.id === 'custom_off_télé'
             ) {
                 cmds.push(currentProcess);
             }
@@ -2711,7 +2795,10 @@ APP.LeaveHomeCmd = (function(ref){
                 }
             };})(i, nb, words), 600);
         }
-        func(0, nb, words);
+        if(cmds.length > 0){
+            func(0, nb, words);
+        }
+
     }
 
     return this;
@@ -3766,15 +3853,15 @@ APP.SoundcloudModule = (function(){
 });
 APP.TemperatureModule = (function(){
 
-    var lastTemperature = {ext: 15, int: 19};
+    this.lastTemperature = {ext: 15, int: 19};
     var _ref = this;
 
     this.init = function(){
 
         // start check temperature
         APP.services.TemperatureService = new APP.TemperatureService();
-        APP.services.TemperatureService.startCheckTemperature();
         APP.services.TemperatureService.addEventListener(APP.services.TemperatureService.ON_CHECK_TEMPERATURE, callBackCheck, _ref);
+        APP.services.TemperatureService.startCheckTemperature();
 
     }
 
@@ -3783,25 +3870,25 @@ APP.TemperatureModule = (function(){
         var flag = false;
 
         // ext
-        if(result.ext < -1 && lastTemperature.ext >= -1){
+        if(result.ext < -1 && _ref.lastTemperature.ext >= -1){
             str += ' Couvrez vous bien si vous sortez !';
             flag = true;
         }
-        else if(result.ext < -5 && lastTemperature.ext >= -5){
+        else if(result.ext < -5 && _ref.lastTemperature.ext >= -5){
             str += ' Couvrez vous bien si vous sortez !';
             flag = true;
         }
-        else if(result.ext > 30 && lastTemperature.ext <= 30){
+        else if(result.ext > 30 && _ref.lastTemperature.ext <= 30){
             str += ' Pensez à vous hydrater !';
             flag = true;
         }
-        else if(result.ext > 35 && lastTemperature.ext <= 35){
+        else if(result.ext > 35 && _ref.lastTemperature.ext <= 35){
             str += ' Pensez à vous hydrater !';
             flag = true;
         }
 
         // int
-        if(result.int < 17 && lastTemperature.int >= 17){
+        if(result.int < 17 && _ref.lastTemperature.int >= 17){
             str = 'La température est anormalement basse dans le salon. ' + str;
             flag = true;
         }
@@ -3810,8 +3897,8 @@ APP.TemperatureModule = (function(){
             APP.services.talkServeCtrl.speech(str);
         }
 
-        lastTemperature.ext = result.ext;
-        lastTemperature.int = result.int;
+        _ref.lastTemperature.ext = result.ext;
+        _ref.lastTemperature.int = result.int;
     }
 
     return this;
@@ -3870,6 +3957,7 @@ APP.initServer = function(){
         var secretValid = paramsObj.key && paramsObj.key === keyAuth;
 
         console.log('isLocal ' + isLocal);
+        console.log(paramsObj);
         console.log('clientServer get url ' + req.url);
 
         if(paramsObj.enterHome) {
@@ -3890,7 +3978,7 @@ APP.initServer = function(){
             res.write('');
             res.end();
 
-        }else if(paramsObj.key && (isLocal || secretValid)) {
+        }else if( (paramsObj.key || paramsObj.key === '') && (isLocal || secretValid)) {
 
             if(paramsObj.idcmd) {
                 var idCmd = paramsObj.idcmd;
@@ -3902,28 +3990,34 @@ APP.initServer = function(){
                 console.log(paramsObj);
 
                 // search command with id = idCmd in CommandsModel
-                nb = APP.models.CommandsModel.LISTENING_WORDS_ACTION.length;
-                for (i = 0; i < nb; i++) {
-                    if(APP.models.CommandsModel.LISTENING_WORDS_ACTION[i].id === idCmd){
-                        console.log("CMD found !");
-                        command = APP.models.CommandsModel.LISTENING_WORDS_ACTION[i];
-                        switch(command.type){
-                            case 'execute':
-                                APP.services.DispatcherCommands.run(words, command, APP.lastServiceLaunch).then(function(){
-                                    APP.lastServiceLaunch = APP.services.DispatcherCommands.lastServiceLaunch;
-                                    console.log('lastServiceLaunch : ' + lastServiceLaunch);
-                                }).catch(function(){
+                command = APP.models.CommandsModel.getCmdFromId(idCmd);
+                if(command) {
+                    console.log("CMD found !");
+                    switch(command.type){
+                        case 'execute':
+                            APP.services.DispatcherCommands.run(words, command, APP.lastServiceLaunch).then(function(){
+                                APP.lastServiceLaunch = APP.services.DispatcherCommands.lastServiceLaunch;
+                                console.log('lastServiceLaunch : ' + lastServiceLaunch);
+                            }).catch(function(){
 
-                                });
-                                break;
-                        }
-                        break;
+                            });
+                            break;
                     }
                 }
                 res.writeHead(200, {'Content-Type': 'text/html'});
                 res.write('');
                 res.end();
 
+            }else if(paramsObj.service) {
+                console.log("Service to exec : " + paramsObj.service);
+                if(APP.HTTPServerController[paramsObj.service]) {
+                    console.log("Service found !");
+                    APP.HTTPServerController[paramsObj.service](res, paramsObj).catch(function(){
+                        displayErrorPage(filesRobotServer, req, res);
+                    });
+                }else{
+                    displayErrorPage(filesRobotServer, req, res);
+                }
             }else if(req.url.indexOf("config.json") !== -1) {
 
                 filesInterfaceServer.serveFile('../../datas/config.json', 200, {}, req, res);

@@ -10,8 +10,9 @@
 @import './block/Nav/nav';
 @import './block/Temperature/temperature';
 @import './block/Lights/lights';
-@import './block/Volume/volume';
+@import './block/Controls/controls';
 @import './block/Camera/camera';
+@import './block/CustomCmds/customCmds';
 
 // Components
 @import './component/button';

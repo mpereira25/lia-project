@@ -39,6 +39,7 @@ APP.initServer = function(){
         var secretValid = paramsObj.key && paramsObj.key === keyAuth;
 
         console.log('isLocal ' + isLocal);
+        console.log(paramsObj);
         console.log('clientServer get url ' + req.url);
 
         if(paramsObj.enterHome) {
@@ -59,7 +60,7 @@ APP.initServer = function(){
             res.write('');
             res.end();
 
-        }else if(paramsObj.key && (isLocal || secretValid)) {
+        }else if( (paramsObj.key || paramsObj.key === '') && (isLocal || secretValid)) {
 
             if(paramsObj.idcmd) {
                 var idCmd = paramsObj.idcmd;
@@ -71,28 +72,34 @@ APP.initServer = function(){
                 console.log(paramsObj);
 
                 // search command with id = idCmd in CommandsModel
-                nb = APP.models.CommandsModel.LISTENING_WORDS_ACTION.length;
-                for (i = 0; i < nb; i++) {
-                    if(APP.models.CommandsModel.LISTENING_WORDS_ACTION[i].id === idCmd){
-                        console.log("CMD found !");
-                        command = APP.models.CommandsModel.LISTENING_WORDS_ACTION[i];
-                        switch(command.type){
-                            case 'execute':
-                                APP.services.DispatcherCommands.run(words, command, APP.lastServiceLaunch).then(function(){
-                                    APP.lastServiceLaunch = APP.services.DispatcherCommands.lastServiceLaunch;
-                                    console.log('lastServiceLaunch : ' + lastServiceLaunch);
-                                }).catch(function(){
+                command = APP.models.CommandsModel.getCmdFromId(idCmd);
+                if(command) {
+                    console.log("CMD found !");
+                    switch(command.type){
+                        case 'execute':
+                            APP.services.DispatcherCommands.run(words, command, APP.lastServiceLaunch).then(function(){
+                                APP.lastServiceLaunch = APP.services.DispatcherCommands.lastServiceLaunch;
+                                console.log('lastServiceLaunch : ' + lastServiceLaunch);
+                            }).catch(function(){
 
-                                });
-                                break;
-                        }
-                        break;
+                            });
+                            break;
                     }
                 }
                 res.writeHead(200, {'Content-Type': 'text/html'});
                 res.write('');
                 res.end();
 
+            }else if(paramsObj.service) {
+                console.log("Service to exec : " + paramsObj.service);
+                if(APP.HTTPServerController[paramsObj.service]) {
+                    console.log("Service found !");
+                    APP.HTTPServerController[paramsObj.service](res, paramsObj).catch(function(){
+                        displayErrorPage(filesRobotServer, req, res);
+                    });
+                }else{
+                    displayErrorPage(filesRobotServer, req, res);
+                }
             }else if(req.url.indexOf("config.json") !== -1) {
 
                 filesInterfaceServer.serveFile('../../datas/config.json', 200, {}, req, res);

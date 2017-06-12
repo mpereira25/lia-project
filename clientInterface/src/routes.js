@@ -4,17 +4,19 @@ import Header from './view/block/Header/Header';
 import Nav from './view/block/Nav/Nav';
 import Temperature from './view/block/Temperature/Temperature';
 import Lights from './view/block/Lights/Lights';
-import Volume from './view/block/Volume/Volume';
+import Controls from './view/block/Controls/Controls';
 import Camera from './view/block/Camera/Camera';
+import CustomCmds from './view/block/CustomCmds/CustomCmds';
 
 const Home = () => (
     <div>
         <Header />
         <Nav />
-        <Volume />
+        <Controls />
         <Temperature />
         <Lights />
         <Camera />
+        <CustomCmds />
     </div>
 )
 

@@ -3,6 +3,10 @@ export default class MainModel {
     constructor() {
         this._configJson = {};
         this._commandsJson = [];
+
+        this.lightCmds = [];
+        this.customOnOffCmds = [];
+        this.customCmds = [];
         this.secret = '';
         this.domain = '';
         this.temperatureExt = 0;

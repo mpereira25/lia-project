@@ -105,6 +105,21 @@ gulp.task("webpack:serve", function() {
     var myConfig = Object.create(webpackConfig);
     myConfig.watch = true;
 
+    myConfig.plugins = [
+        new webpack.optimize.OccurenceOrderPlugin(),
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoErrorsPlugin(),
+        new webpack.DefinePlugin({
+          'process.env': {
+            NODE_ENV: JSON.stringify('dev')
+          }
+        }),
+        new webpack.optimize.UglifyJsPlugin({
+            mangle: {
+                except: ['$super', '$', 'exports', 'require']
+            }
+        })
+    ];
     // run webpack
     webpack(myConfig, function(err, stats) {
         if(err) throw new gutil.PluginError("webpack", err);
@@ -124,7 +139,7 @@ gulp.task("webpack:build", function() {
         new webpack.NoErrorsPlugin(),
         new webpack.DefinePlugin({
           'process.env': {
-            NODE_ENV: JSON.stringify('dev')
+            NODE_ENV: JSON.stringify('production')
           }
         }),
         new webpack.optimize.UglifyJsPlugin({
@@ -162,7 +177,7 @@ gulp.task('serve:build', function() {
 
 gulp.task('serve', function() {
     isMockHtml = false;
-    runSequence('clean', 'copy:html', 'copy:assets', 'scss-lint', 'sass', 'cleanCSS', function () {
+    runSequence('clean', 'copy:html', 'copy:assets', 'sass', 'cleanCSS', 'webpack:serve', function () {
 
         browserSync({
             open: false,
@@ -172,7 +187,7 @@ gulp.task('serve', function() {
             }
         });
 
-        runSequence('watch', 'webpack:serve');
+        runSequence('watch');
     });
 });
 

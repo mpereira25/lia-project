@@ -13,9 +13,20 @@
         right: 0;
     }
 
-    &__valueInt {
+    &__ctValue {
         position: relative;
         display: inline-block;
+        text-align: center;
+    }
+
+    &__labelValue {
+        color: #ffffff;
+        font-size: 1.5rem;
+    }
+
+    &__valueInt {
+        position: relative;
+        display: block;
         width: 150px;
         height: 150px;
         margin: 0;
@@ -31,7 +42,7 @@
 
     &__valueExt {
         position: relative;
-        display: inline-block;
+        display: block;
         width: 100px;
         height: 100px;
         margin: 0;

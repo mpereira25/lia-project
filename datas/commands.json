@@ -110,7 +110,7 @@
    },
    {
       "id":"youtube",
-      "keyWords":"cherche musique",
+      "keyWords":"cherche youtube",
       "type":"execute",
       "module":"YoutubeModule",
       "commandClasses":[
@@ -119,7 +119,7 @@
    },
    {
       "id":"youtube_playlist_80",
-      "keyWords":"lance playlist années 80",
+      "keyWords":"lance playlist youtube années 80",
       "type":"execute",
       "playlist_title":"Playlist Années 80.",
       "playlist_watch":"https://www.youtube.com/watch?v=E-8dsWrjC5U&list=PLxJ9pieZcILmr8tjdX_txzNyBl1Nl-TaU&index=",
@@ -131,7 +131,7 @@
    },
    {
       "id":"youtube_playlist_michel",
-      "keyWords":"lance playlist Michel||michelle||michel",
+      "keyWords":"lance playlist youtube Michel||michelle||michel",
       "type":"execute",
       "playlist_title":"Playlist Michel.",
       "playlist_watch":"https://www.youtube.com/watch?v=-UJX0QpkhhU&list=PLxJ9pieZcILmY8hOLcQESmT_9ViE8OjRO&index=1",
@@ -265,8 +265,8 @@
       ]
    },
    {
-      "id":"son_on_télé",
-      "keyWords":"met active le son",
+      "id":"custom_on_télé",
+      "keyWords":"met||active le son",
       "type":"execute",
       "cmd":[
          "sudo /home/pi/rcswitch-pi/./send 11111 1 1"
@@ -277,7 +277,7 @@
       ]
    },
    {
-      "id":"son_off_télé",
+      "id":"custom_off_télé",
       "keyWords":"coupe le son",
       "type":"execute",
       "cmd":[
@@ -316,7 +316,7 @@
    },
    {
       "id":"music",
-      "keyWords":"lance musique",
+      "keyWords":"lance||cherche musique",
       "type":"execute",
       "module":"MusicModule",
       "commandClasses":[
@@ -459,5 +459,13 @@
     "commandClasses":[
        "CameraOffCmd"
     ]
- }
+},
+{
+   "id":"wakeup",
+   "keyWords":"",
+   "type":"execute",
+   "commandClasses":[
+      "WakeupSnowboyCmd"
+   ]
+}
 ]

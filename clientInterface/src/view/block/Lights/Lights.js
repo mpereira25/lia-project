@@ -6,7 +6,7 @@ import URLUtils from '../../../utils/URLUtils';
 
 const Lights = () => {
 
-    const listLights = MainModelController.getLightsCmds();
+    const listLights = MainModelController.model.lightCmds;
     const listItem = listLights.map((item, i) => {
         return (
             <div key={'itemlight' + i} className="lights__item">
